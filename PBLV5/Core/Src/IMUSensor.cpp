@@ -82,11 +82,6 @@ void IMUSensor::pullGyroData(I2C_HandleTypeDef *hi2c, uint8_t gyroDeviceAddr, ui
 		  std::swap(rawData[i], rawData[i + 1]);
 		}
 
-		for ( uint8_t i = 0; i < 6; i++)
-		{
-			accData[i] = rawData[i];
-		}
-
 		addToBuffer(gyroBuffer, dataTimeStamp, size);
 	}
 }

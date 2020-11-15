@@ -52,8 +52,6 @@ class IMUSensor {
 	DataBuffer<IMUData> gyroBuffer;
 	DataBuffer<IMUData> magBuffer;
 
-	uint8_t accData[6];
-
 	uint8_t rawData[6];
 	bool readingInProgress = 0;
 	uint32_t dataTimeStamp = 0;
