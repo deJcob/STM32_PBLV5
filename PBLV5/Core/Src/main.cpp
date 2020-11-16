@@ -187,6 +187,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //Jacke
 	if (htim->Instance == TIM7)
 	{
+		/*
 		//tu ramke stworzyc
 		uint8_t dataBuffer[8];
 		dataBuffer[0] = (uint8_t)0x11;
@@ -211,7 +212,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		dataBuffer[7] = (uint8_t)0x01;
 
 		drivingSystem.configureDesiredPWM(dataBuffer);
-//		drivingSystem.drivingService();
+//		drivingSystem.drivingService(); */
 
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
@@ -233,7 +234,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 	if (htim->Instance == TIM9)
 	{
-		/*timMeasureSystem.takeTS(1);
+		timMeasureSystem.takeTS(1);
 
 		uint16_t dataLength;
 		std::unique_ptr<uint8_t[]> dataBuffer = std::make_unique<uint8_t[]>(dataManagement.getMaxDataSize());
@@ -246,15 +247,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		sendDataWhileConnected(dataBuffer.get(), dataLength);
 #endif
 
-		timMeasureSystem.calculateElapsedTime(1);*/
+		timMeasureSystem.calculateElapsedTime(1);
 	}
 	if (htim->Instance == TIM10)
 		{
-			/*timMeasureSystem.takeTS(2);
+			timMeasureSystem.takeTS(2);
 
 			encoderSystem.encoderService();
 
-			timMeasureSystem.calculateElapsedTime(2);*/
+			timMeasureSystem.calculateElapsedTime(2);
 		}
 
 		if (htim->Instance == TIM11)
@@ -268,20 +269,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 		if (htim->Instance == TIM13)
 		{
-			/*timMeasureSystem.takeTS(4);
+			timMeasureSystem.takeTS(4);
 
 			canLidar.scheduleADASFrames();
 
-			timMeasureSystem.calculateElapsedTime(4);*/
+			timMeasureSystem.calculateElapsedTime(4);
 		}
 
 		if (htim->Instance == TIM12)
 		{
-/*			timMeasureSystem.takeTS(5);
+			timMeasureSystem.takeTS(5);
 
 			ultrasoundManager.fetchDistanceData();
 
-			timMeasureSystem.takeTS(5);*/
+			timMeasureSystem.takeTS(5);
 		}
 
 }
@@ -431,25 +432,25 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  /*canLidar.configureCAN();
+    canLidar.configureCAN();
 
     HAL_UART_Receive_DMA(&huart2, gpsManager.getDataBuffer(), gpsManager.getBufferLength());
     HAL_UART_Receive_DMA(&huart6, miniLidarManager.getDataBuffer(), miniLidarManager.getBufferLength());
     HAL_UART_Receive_DMA(&huart4, rfidManager.getDataBuffer(), rfidManager.getBufferLength());
     HAL_UART_Receive_DMA(&huart5, ultrasoundManager.getDataBuffer(), ultrasoundManager.getBufferLength());
-*/
+
     HAL_I2C_Init(&hi2c1);
     imuSensors.initializeI2C_Sensors(&hi2c1);
 
     drivingSystem.initialize();
-/*
+
     dataManagement.configure(&dataPtrMap);
     tcp_server_init();
 
   #ifdef UDP_CLIENT
     udp_client_connect();
   #endif
-*/
+
     HAL_TIM_Base_Start(&htim14);
     HAL_TIM_Base_Start_IT(&htim6);
     HAL_TIM_Base_Start_IT(&htim7);
@@ -466,12 +467,12 @@ int main(void)
 
 
 
-//  HAL_TIM_Base_Start_IT(&htim7);
-  HAL_TIM_Base_Start_IT(&htim6);
-//  HAL_TIM_Base_Start_IT(&htim9);
+    HAL_TIM_Base_Start_IT(&htim7);
+    HAL_TIM_Base_Start_IT(&htim6);
+    HAL_TIM_Base_Start_IT(&htim9);
 
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -479,18 +480,6 @@ int main(void)
   while (1)
   {
 	  MX_LWIP_Process();
-
-/*		HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-		HAL_Delay(500);*/
-/*		HAL_GPIO_TogglePin(BRIDGE_A1_GPIO_Port, BRIDGE_A1_Pin);
-		HAL_Delay(500);*/
-//	  		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-
-
 
     /* USER CODE END WHILE */
 
