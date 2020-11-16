@@ -6,8 +6,8 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 3
 Title "STM32F4 based AGV-ROS module"
-Date "2020-11-12"
-Rev "6"
+Date "2020-11-16"
+Rev "6.1"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -591,7 +591,7 @@ L Jumper:SolderJumper_2_Open JP5
 U 1 1 5FB54B23
 P 10000 10150
 F 0 "JP5" H 10000 10355 50  0000 C CNN
-F 1 "Bridge" H 10000 10264 50  0000 C CNN
+F 1 "Bridge open" H 10000 10264 50  0000 C CNN
 F 2 "" H 10000 10150 50  0001 C CNN
 F 3 "~" H 10000 10150 50  0001 C CNN
 	1    10000 10150
@@ -602,7 +602,7 @@ L Jumper:SolderJumper_2_Open JP6
 U 1 1 5FB54BC4
 P 10000 10500
 F 0 "JP6" H 10000 10705 50  0000 C CNN
-F 1 "Bridge" H 10000 10614 50  0000 C CNN
+F 1 "Bridge open" H 10000 10614 50  0000 C CNN
 F 2 "" H 10000 10500 50  0001 C CNN
 F 3 "~" H 10000 10500 50  0001 C CNN
 	1    10000 10500
@@ -649,7 +649,7 @@ L Jumper:SolderJumper_2_Open JP2
 U 1 1 5FBAC2B0
 P 8000 9500
 F 0 "JP2" H 8000 9705 50  0000 C CNN
-F 1 "Bridge close" H 8000 9614 50  0000 C CNN
+F 1 "Bridge open" H 8000 9614 50  0000 C CNN
 F 2 "" H 8000 9500 50  0001 C CNN
 F 3 "~" H 8000 9500 50  0001 C CNN
 	1    8000 9500
@@ -713,8 +713,8 @@ Wire Notes Line
 	7200 2950 10850 2950
 Text Notes 10400 10750 2    100  Italic 20
 Nucleo144-F767ZI Ardunio Connector usage
-Text Notes 9150 9950 2    50   ~ 10
-!!! TODO: note if some bridges are closed or open !!!!\n\n
+Text Notes 8250 10500 2    50   Italic 0
+Bridge numbers may be different
 Text Notes 14550 9100 0    50   Italic 0
 DC Motors with gearbox\nXD-37G520
 Text Notes 7250 5650 0    100  Italic 20
@@ -1211,8 +1211,6 @@ Wire Wire Line
 	5350 8600 4750 8600
 Wire Wire Line
 	4750 8700 5550 8700
-Text GLabel 5550 8700 2    50   Input Italic 0
-PD7
 Text Label 4750 8800 0    50   Italic 0
 STLK_RX
 Text Label 4750 8900 0    50   Italic 0
@@ -1466,6 +1464,7 @@ Text GLabel 12550 4700 0    50   Input ~ 0
 PE14
 Text GLabel 12550 4400 0    50   Input ~ 0
 PC0
+NoConn ~ 5550 8700
 Wire Bus Line
 	12900 7600 13850 7600
 Wire Bus Line
