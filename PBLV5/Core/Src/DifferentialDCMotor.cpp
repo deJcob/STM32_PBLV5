@@ -201,11 +201,13 @@ void DifferentialDCMotor::configureDesiredPWM(uint8_t *leftMotorDirection, uint8
 	motorDesiredStatus[LEFT_MOTOR] = (status)*leftMotorDirection;
 	motorDesiredStatus[RIGHT_MOTOR] = (status)*rightMotorDirection;
 
-	//pwmDesiredValue[LEFT_MOTOR] = *leftDesiredPWM;
-	//pwmDesiredValue[RIGHT_MOTOR] = *rightDesiredPWM;
+	pwmDesiredValue[LEFT_MOTOR] = *leftDesiredPWM;
+	pwmDesiredValue[RIGHT_MOTOR] = *rightDesiredPWM;
 
-	pwmDesiredValue[LEFT_MOTOR] = 255;
-	pwmDesiredValue[RIGHT_MOTOR] = 255;
+/*	motorDesiredStatus[LEFT_MOTOR] = (status) 1;
+	motorDesiredStatus[RIGHT_MOTOR] = (status) 1;
+	pwmDesiredValue[LEFT_MOTOR] = 2057;
+	pwmDesiredValue[RIGHT_MOTOR] = 2057;*/
 }
 
 uint8_t DifferentialDCMotor::getDataInArray(uint8_t *dataBuffer)

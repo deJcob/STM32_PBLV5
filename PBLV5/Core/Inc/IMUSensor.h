@@ -11,7 +11,7 @@
 #include "DataBuffer.h"
 #include "IMUData.h"
 #include "xNucleoShieldSensorsV3.h"
-//#include "xNucleoShieldSensorsV1.h"
+#include "xNucleoShieldSensorsV1.h"
 #include "main.h"
 
 #define GYRO_CNT_REG_1 0x20
@@ -51,6 +51,8 @@ class IMUSensor {
 	DataBuffer<IMUData> accBuffer;
 	DataBuffer<IMUData> gyroBuffer;
 	DataBuffer<IMUData> magBuffer;
+
+ 	uint8_t accData[6];
 
 	uint8_t rawData[6];
 	bool readingInProgress = 0;

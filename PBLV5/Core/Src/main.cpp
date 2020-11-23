@@ -187,20 +187,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //Jacke
 	if (htim->Instance == TIM7)
 	{
-		/*
 		//tu ramke stworzyc
 		uint8_t dataBuffer[8];
-		dataBuffer[0] = (uint8_t)0x11;
-		dataBuffer[1] = (uint8_t)0x00;
-		dataBuffer[2] = (uint8_t)0x64;
-		dataBuffer[3] = (uint8_t)0x01;
-		dataBuffer[4] = (uint8_t)0xF4;
-		dataBuffer[5] = (uint8_t)0x03;
-		dataBuffer[6] = (uint8_t)0xE8;
-		dataBuffer[7] = (uint8_t)0x01;
+		dataBuffer[0] = (uint8_t)0x11;//kierunek
+		dataBuffer[1] = (uint8_t)0x00;//starszy bajt pwm
+		dataBuffer[2] = (uint8_t)0x64;//mlodszy bajt pwm
+		dataBuffer[3] = (uint8_t)0x01;//starszy bajt dr pwm
+		dataBuffer[4] = (uint8_t)0xF4;//mlodszy bajt dr pwm
+		dataBuffer[5] = (uint8_t)0x03;//starszy bajt casu trwania rozkazu
+		dataBuffer[6] = (uint8_t)0xE8;//mlodszy
+		dataBuffer[7] = (uint8_t)0x01;//kolejkowanie
 
-		drivingSystem.configureDesiredPWM(dataBuffer);
-
+//		drivingSystem.configureDesiredPWM(dataBuffer);
 
 		dataBuffer[0] = (uint8_t)0x22;
 		dataBuffer[1] = (uint8_t)0x01;
@@ -211,8 +209,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		dataBuffer[6] = (uint8_t)0xE8;
 		dataBuffer[7] = (uint8_t)0x01;
 
-		drivingSystem.configureDesiredPWM(dataBuffer);
-//		drivingSystem.drivingService(); */
+//		drivingSystem.configureDesiredPWM(dataBuffer);
 
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
@@ -378,6 +375,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
 	canLidar.processRXData(CAN_RX_FIFO1);
 }
+ uint8_t imu[4];
 
 /* USER CODE END 0 */
 
@@ -432,7 +430,7 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-    canLidar.configureCAN();
+  canLidar.configureCAN();
 
     HAL_UART_Receive_DMA(&huart2, gpsManager.getDataBuffer(), gpsManager.getBufferLength());
     HAL_UART_Receive_DMA(&huart6, miniLidarManager.getDataBuffer(), miniLidarManager.getBufferLength());
@@ -467,12 +465,12 @@ int main(void)
 
 
 
-    HAL_TIM_Base_Start_IT(&htim7);
-    HAL_TIM_Base_Start_IT(&htim6);
-    HAL_TIM_Base_Start_IT(&htim9);
+/*  HAL_TIM_Base_Start_IT(&htim7);
+  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim9);
 
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);*/
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -480,6 +478,18 @@ int main(void)
   while (1)
   {
 	  MX_LWIP_Process();
+
+/*		HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+		HAL_Delay(500);
+		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		HAL_Delay(500);
+		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+		HAL_Delay(500);*/
+/*		HAL_GPIO_TogglePin(BRIDGE_A1_GPIO_Port, BRIDGE_A1_Pin);
+		HAL_Delay(500);*/
+//	  		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
+
+
 
     /* USER CODE END WHILE */
 
