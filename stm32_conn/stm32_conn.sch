@@ -1,5 +1,4 @@
 EESchema Schematic File Version 4
-LIBS:stm32_conn-cache
 EELAYER 26 0
 EELAYER END
 $Descr A3 16535 11693
@@ -141,11 +140,11 @@ Text Label 14050 6550 0    50   ~ 0
 A+
 Text Label 13100 6550 0    50   ~ 0
 A-
-Text Label 12950 7600 0    50   ~ 0
+Text Label 12950 8100 0    50   ~ 0
 RIGHT_MOTORS
-Text Label 14000 7750 0    50   ~ 0
+Text Label 14000 8250 0    50   ~ 0
 B+
-Text Label 13100 7750 0    50   ~ 0
+Text Label 13100 8250 0    50   ~ 0
 B-
 Connection ~ 3350 10100
 $Comp
@@ -715,11 +714,11 @@ Text Notes 10400 10750 2    100  Italic 20
 Nucleo144-F767ZI Ardunio Connector usage
 Text Notes 8250 10500 2    50   Italic 0
 Bridge numbers may be different
-Text Notes 14550 9100 0    50   Italic 0
+Text Notes 13650 9700 0    50   Italic 0
 DC Motors with gearbox\nXD-37G520
 Text Notes 7250 5650 0    100  Italic 20
 Sensors Board\n
-Text Notes 12300 9150 0    100  Italic 20
+Text Notes 11650 9700 0    100  Italic 20
 Motors and H-Bridge\n
 NoConn ~ 3150 2400
 NoConn ~ 3250 2400
@@ -826,60 +825,54 @@ Wire Wire Line
 Wire Wire Line
 	14250 6550 14700 6550
 Connection ~ 14250 6550
-Wire Wire Line
-	13100 6500 13100 7500
-Wire Wire Line
-	13100 7500 14250 7500
 $Comp
 L Motor:Motor_DC_ALT M4
 U 1 1 5FAAE7F3
-P 14700 8200
-F 0 "M4" H 14847 8196 50  0000 L CNN
-F 1 "DC Motor 12V 300RPM" H 14847 8105 50  0000 L CNN
-F 2 "" H 14700 8110 50  0001 C CNN
-F 3 "~" H 14700 8110 50  0001 C CNN
-F 4 "XD-37GB520" H 14700 8200 50  0001 C CNN "Symbol"
-	1    14700 8200
+P 14700 8700
+F 0 "M4" H 14847 8696 50  0000 L CNN
+F 1 "DC Motor 12V 300RPM" H 14847 8605 50  0000 L CNN
+F 2 "" H 14700 8610 50  0001 C CNN
+F 3 "~" H 14700 8610 50  0001 C CNN
+F 4 "XD-37GB520" H 14700 8700 50  0001 C CNN "Symbol"
+	1    14700 8700
 	1    0    0    -1  
 $EndComp
 $Comp
 L Motor:Motor_DC_ALT M2
 U 1 1 5FAAE7FB
-P 14250 8200
-F 0 "M2" H 14000 8200 50  0000 L CNN
-F 1 "DC Motor 12V 300RPM" H 13250 8100 50  0000 L CNN
-F 2 "" H 14250 8110 50  0001 C CNN
-F 3 "~" H 14250 8110 50  0001 C CNN
-F 4 "XD-37GB520" H 14250 8200 50  0001 C CNN "Symbol"
-	1    14250 8200
+P 14250 8700
+F 0 "M2" H 14000 8700 50  0000 L CNN
+F 1 "DC Motor 12V 300RPM" H 13250 8600 50  0000 L CNN
+F 2 "" H 14250 8610 50  0001 C CNN
+F 3 "~" H 14250 8610 50  0001 C CNN
+F 4 "XD-37GB520" H 14250 8700 50  0001 C CNN "Symbol"
+	1    14250 8700
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	14700 8700 14700 8500
+	14700 9200 14700 9000
 Wire Wire Line
-	14700 7750 14700 8000
+	14700 8250 14700 8500
 Entry Wire Line
-	13000 7600 13100 7700
+	13000 8100 13100 8200
 Entry Wire Line
-	13850 7600 13950 7700
+	13850 8100 13950 8200
 Wire Wire Line
-	14250 8500 14250 8700
-Connection ~ 14250 8700
+	14250 9000 14250 9200
+Connection ~ 14250 9200
 Wire Wire Line
-	14250 8700 14700 8700
+	14250 9200 14700 9200
 Wire Wire Line
-	14250 7750 14250 8000
+	14250 8250 14250 8500
 Wire Wire Line
-	13950 7700 13950 7750
+	13950 8200 13950 8250
 Wire Wire Line
-	13950 7750 14250 7750
+	13950 8250 14250 8250
 Wire Wire Line
-	14250 7750 14700 7750
-Connection ~ 14250 7750
+	14250 8250 14700 8250
+Connection ~ 14250 8250
 Wire Wire Line
-	13100 7700 13100 8700
-Wire Wire Line
-	13100 8700 14250 8700
+	13100 9200 14250 9200
 $Sheet
 S 14750 900  800  900 
 U 5FAF8BBB
@@ -954,21 +947,13 @@ Text Notes 14700 6000 0    50   Italic 0
 ADC are not used and\nshould be connected to GND.
 Text Notes 14350 1650 0    50   ~ 10
 TODO
-Wire Notes Line
-	15900 9200 12250 9200
-Wire Notes Line
-	12250 9200 12250 2700
-Wire Notes Line
-	12250 2700 15900 2700
-Wire Notes Line
-	15900 2700 15900 9200
 Text Notes 12250 1250 0    98   Italic 20
 TODO: electronic ruller \n
 Text Notes 14350 6550 0    50   Italic 0
 red
-Text Notes 14350 7750 0    50   Italic 0
+Text Notes 14350 8250 0    50   Italic 0
 red
-Text Notes 14400 8700 0    50   Italic 0
+Text Notes 14400 9200 0    50   Italic 0
 black
 Text Notes 14350 7500 0    50   Italic 0
 black
@@ -1031,7 +1016,6 @@ Text Label 4750 4600 0    50   Italic 0
 LD1[Green]
 Wire Wire Line
 	5200 4600 4750 4600
-NoConn ~ 4750 4700
 NoConn ~ 4750 4800
 Text Label 4750 5600 0    50   Italic 0
 SPI2_SCK
@@ -1109,7 +1093,6 @@ NoConn ~ 4750 4400
 NoConn ~ 4750 3500
 NoConn ~ 4750 3400
 NoConn ~ 4750 3300
-NoConn ~ 4750 3200
 NoConn ~ 4750 2900
 Text Label 4750 6300 0    50   Italic 0
 BRIDGE_B2
@@ -1465,8 +1448,174 @@ PE14
 Text GLabel 12550 4400 0    50   Input ~ 0
 PC0
 NoConn ~ 5550 8700
+$Comp
+L MCU_ModuleV2:LTS6-NP U?
+U 1 1 5FC0A0B2
+P 12350 6950
+F 0 "U?" H 12600 7550 50  0000 C CNN
+F 1 "LTS6-NP" H 12600 7450 50  0000 C CNN
+F 2 "Sensor_Current:LEM_LTSR-NP" H 12350 6150 50  0001 C CNN
+F 3 "https://www.lem.com/sites/default/files/products_datasheets/ltsr_6-np.pdf" H 12350 6550 50  0001 C CNN
+	1    12350 6950
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5FC0A1D8
+P 12350 7550
+F 0 "#PWR?" H 12350 7300 50  0001 C CNN
+F 1 "GND" H 12355 7377 50  0000 C CNN
+F 2 "" H 12350 7550 50  0001 C CNN
+F 3 "" H 12350 7550 50  0001 C CNN
+	1    12350 7550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5VD #PWR?
+U 1 1 5FC0A2CA
+P 12350 6350
+F 0 "#PWR?" H 12350 6200 50  0001 C CNN
+F 1 "+5VD" H 12365 6523 50  0000 C CNN
+F 2 "" H 12350 6350 50  0001 C CNN
+F 3 "" H 12350 6350 50  0001 C CNN
+	1    12350 6350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12350 7450 12350 7550
+Wire Wire Line
+	12350 6450 12350 6350
+Wire Wire Line
+	12750 6650 12850 6650
+Wire Wire Line
+	13100 6650 13100 6500
+Wire Wire Line
+	12850 6650 12850 6750
+Wire Wire Line
+	12750 6850 12850 6850
+Connection ~ 12850 6650
+Wire Wire Line
+	12850 6650 13100 6650
+Wire Wire Line
+	12750 6750 12850 6750
+Connection ~ 12850 6750
+Wire Wire Line
+	12850 6750 12850 6850
+Wire Wire Line
+	12750 7050 12850 7050
+Wire Wire Line
+	12850 7050 12850 7150
+Wire Wire Line
+	12850 7500 14250 7500
+Wire Wire Line
+	12750 7250 12850 7250
+Connection ~ 12850 7250
+Wire Wire Line
+	12850 7250 12850 7500
+Wire Wire Line
+	12850 7150 12750 7150
+Connection ~ 12850 7150
+Wire Wire Line
+	12850 7150 12850 7250
+Wire Wire Line
+	11950 6950 11800 6950
+Text GLabel 11800 6950 0    50   Input ~ 0
+PA3
+$Comp
+L MCU_ModuleV2:LTS6-NP U?
+U 1 1 5FCD065C
+P 12350 8650
+F 0 "U?" H 12600 9250 50  0000 C CNN
+F 1 "LTS6-NP" H 12600 9150 50  0000 C CNN
+F 2 "Sensor_Current:LEM_LTSR-NP" H 12350 7850 50  0001 C CNN
+F 3 "https://www.lem.com/sites/default/files/products_datasheets/ltsr_6-np.pdf" H 12350 8250 50  0001 C CNN
+	1    12350 8650
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5FCD0663
+P 12350 9250
+F 0 "#PWR?" H 12350 9000 50  0001 C CNN
+F 1 "GND" H 12355 9077 50  0000 C CNN
+F 2 "" H 12350 9250 50  0001 C CNN
+F 3 "" H 12350 9250 50  0001 C CNN
+	1    12350 9250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5VD #PWR?
+U 1 1 5FCD0669
+P 12350 8050
+F 0 "#PWR?" H 12350 7900 50  0001 C CNN
+F 1 "+5VD" H 12365 8223 50  0000 C CNN
+F 2 "" H 12350 8050 50  0001 C CNN
+F 3 "" H 12350 8050 50  0001 C CNN
+	1    12350 8050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12350 9150 12350 9250
+Wire Wire Line
+	12350 8150 12350 8050
+Wire Wire Line
+	12750 8350 12850 8350
+Wire Wire Line
+	12850 8350 12850 8450
+Wire Wire Line
+	12750 8550 12850 8550
+Connection ~ 12850 8350
+Wire Wire Line
+	12850 8350 13100 8350
+Wire Wire Line
+	12750 8450 12850 8450
+Connection ~ 12850 8450
+Wire Wire Line
+	12850 8450 12850 8550
+Wire Wire Line
+	12750 8750 12850 8750
+Wire Wire Line
+	12850 8750 12850 8850
+Wire Wire Line
+	12850 9200 14250 9200
+Wire Wire Line
+	12750 8950 12850 8950
+Connection ~ 12850 8950
+Wire Wire Line
+	12850 8950 12850 9200
+Wire Wire Line
+	12850 8850 12750 8850
+Connection ~ 12850 8850
+Wire Wire Line
+	12850 8850 12850 8950
+Wire Wire Line
+	11950 8650 11800 8650
+Text GLabel 11800 8650 0    50   Input ~ 0
+PB1
+Wire Wire Line
+	13100 8350 13100 8200
+Wire Wire Line
+	4750 3200 5700 3200
+Text GLabel 5700 3200 2    50   Input ~ 0
+PA3
+Text Label 4750 3200 0    50   Italic 0
+CURRENT_SENSOR_LEFT
+Wire Wire Line
+	4750 4700 5700 4700
+Text GLabel 5700 4700 2    50   Input ~ 0
+PB1
+Text Label 4750 4700 0    50   Italic 0
+CURRENT_SENSOR_RIGHT
+Wire Notes Line
+	15900 9850 11450 9850
+Wire Notes Line
+	11450 9850 11450 2700
+Wire Notes Line
+	11450 2700 15900 2700
+Wire Notes Line
+	15900 2700 15900 9850
 Wire Bus Line
-	12900 7600 13850 7600
+	12900 8100 13850 8100
 Wire Bus Line
 	13900 5900 14600 5900
 Wire Bus Line
