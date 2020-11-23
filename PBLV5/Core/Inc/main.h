@@ -62,6 +62,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
+#define BRIDGE_B1_Pin GPIO_PIN_3
+#define BRIDGE_B1_GPIO_Port GPIOF
 #define BRIDGE_A2_Pin GPIO_PIN_5
 #define BRIDGE_A2_GPIO_Port GPIOF
 #define TESTOWA_Pin GPIO_PIN_9

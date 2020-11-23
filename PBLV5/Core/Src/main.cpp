@@ -1376,7 +1376,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, GPIO_PIN_3|BRIDGE_A2_Pin|TESTOWA_Pin|BRIDGE_A1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, BRIDGE_B1_Pin|BRIDGE_A2_Pin|TESTOWA_Pin|BRIDGE_A1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BRIDGE_B2_GPIO_Port, BRIDGE_B2_Pin, GPIO_PIN_RESET);
@@ -1399,8 +1399,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PF3 BRIDGE_A2_Pin BRIDGE_A1_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_3|BRIDGE_A2_Pin|BRIDGE_A1_Pin;
+  /*Configure GPIO pins : BRIDGE_B1_Pin BRIDGE_A2_Pin BRIDGE_A1_Pin */
+  GPIO_InitStruct.Pin = BRIDGE_B1_Pin|BRIDGE_A2_Pin|BRIDGE_A1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
