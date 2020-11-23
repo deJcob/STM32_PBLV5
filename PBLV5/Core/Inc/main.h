@@ -62,8 +62,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
-#define BRIDGE_B1_Pin GPIO_PIN_3
-#define BRIDGE_B1_GPIO_Port GPIOF
 #define BRIDGE_A2_Pin GPIO_PIN_5
 #define BRIDGE_A2_GPIO_Port GPIOF
 #define TESTOWA_Pin GPIO_PIN_9
@@ -80,6 +78,8 @@ void Error_Handler(void);
 #define RMII_REF_CLK_GPIO_Port GPIOA
 #define RMII_MDIO_Pin GPIO_PIN_2
 #define RMII_MDIO_GPIO_Port GPIOA
+#define CURRENT_SENSOR_LEFT_Pin GPIO_PIN_3
+#define CURRENT_SENSOR_LEFT_GPIO_Port GPIOA
 #define RMII_CRS_DV_Pin GPIO_PIN_7
 #define RMII_CRS_DV_GPIO_Port GPIOA
 #define RMII_RXD0_Pin GPIO_PIN_4
@@ -88,6 +88,8 @@ void Error_Handler(void);
 #define RMII_RXD1_GPIO_Port GPIOC
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
+#define CURRENT_SENSOR_RIGHT_Pin GPIO_PIN_1
+#define CURRENT_SENSOR_RIGHT_GPIO_Port GPIOB
 #define RMII_TXD1_Pin GPIO_PIN_13
 #define RMII_TXD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14
