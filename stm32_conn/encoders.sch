@@ -6,8 +6,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 3
 Title "Encoders"
-Date "2020-11-02"
-Rev "1"
+Date "2020-11-25"
+Rev "1.1"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -190,11 +190,63 @@ F 3 "" H 7350 4800 50  0001 C CNN
 	1    7350 4800
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	6300 3700 6300 4200
+Wire Wire Line
+	6300 4200 6200 4200
+Wire Wire Line
+	6200 4400 6300 4400
+Wire Wire Line
+	6300 4400 6300 4900
+NoConn ~ 4600 3800
+NoConn ~ 4600 4400
+NoConn ~ 4600 5000
+NoConn ~ 7050 5000
+NoConn ~ 7050 4400
+NoConn ~ 7050 3800
+Wire Notes Line
+	5900 3000 8300 3000
+Wire Notes Line
+	8300 3000 8300 5500
+Wire Notes Line
+	8300 5500 5900 5500
+Wire Notes Line
+	5900 5500 5900 3000
+Wire Notes Line
+	5800 3000 5800 5500
+Wire Notes Line
+	5800 5500 3400 5500
+Wire Notes Line
+	3400 5500 3400 3000
+Wire Notes Line
+	3400 3000 5800 3000
+Text Notes 5000 5450 0    50   ~ 0
+Left wheel encoder
+Text Notes 7450 5450 0    50   ~ 0
+Right wheel encoder
+Text Notes 4300 3500 0    50   Italic 0
+red
+Text Notes 4300 3700 0    50   Italic 0
+yellow
+Text Notes 4300 4300 0    50   Italic 0
+green\n
+Text Notes 4300 4900 0    50   Italic 0
+blue
+Text Notes 4300 3600 0    50   Italic 0
+black
+Text Notes 4300 4100 0    50   Italic 0
+red
+Text Notes 4300 4700 0    50   Italic 0
+red
+Text Notes 4300 4200 0    50   Italic 0
+black
+Text Notes 4300 4800 0    50   Italic 0
+black
 $Comp
-L power:+5V #PWR025
-U 1 1 5FA14FDC
+L power:+5V #PWR?
+U 1 1 60122855
 P 6600 3300
-F 0 "#PWR025" H 6600 3150 50  0001 C CNN
+F 0 "#PWR?" H 6600 3150 50  0001 C CNN
 F 1 "+5V" H 6615 3473 50  0000 C CNN
 F 2 "" H 6600 3300 50  0001 C CNN
 F 3 "" H 6600 3300 50  0001 C CNN
@@ -236,48 +288,32 @@ Wire Wire Line
 	6700 4800 6700 5200
 Connection ~ 6700 4800
 $Comp
-L power:GND #PWR026
-U 1 1 5FA14FF5
+L power:GND #PWR?
+U 1 1 6012286E
 P 6700 5200
-F 0 "#PWR026" H 6700 4950 50  0001 C CNN
+F 0 "#PWR?" H 6700 4950 50  0001 C CNN
 F 1 "GND" H 6705 5027 50  0000 C CNN
 F 2 "" H 6700 5200 50  0001 C CNN
 F 3 "" H 6700 5200 50  0001 C CNN
 	1    6700 5200
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6300 3700 6300 4200
-Wire Wire Line
-	6300 4200 6200 4200
-Wire Wire Line
-	6200 4400 6300 4400
-Wire Wire Line
-	6300 4400 6300 4900
-NoConn ~ 4600 3800
-NoConn ~ 4600 4400
-NoConn ~ 4600 5000
-NoConn ~ 7050 5000
-NoConn ~ 7050 4400
-NoConn ~ 7050 3800
-Wire Notes Line
-	5900 3000 8300 3000
-Wire Notes Line
-	8300 3000 8300 5500
-Wire Notes Line
-	8300 5500 5900 5500
-Wire Notes Line
-	5900 5500 5900 3000
-Wire Notes Line
-	5800 3000 5800 5500
-Wire Notes Line
-	5800 5500 3400 5500
-Wire Notes Line
-	3400 5500 3400 3000
-Wire Notes Line
-	3400 3000 5800 3000
-Text Notes 5000 5450 0    50   ~ 0
-Left wheel encoder
-Text Notes 7450 5450 0    50   ~ 0
-Right wheel encoder
+Text Notes 6750 3500 0    50   Italic 0
+red
+Text Notes 6750 3700 0    50   Italic 0
+yellow
+Text Notes 6750 4300 0    50   Italic 0
+green\n
+Text Notes 6750 4900 0    50   Italic 0
+blue
+Text Notes 6750 3600 0    50   Italic 0
+black
+Text Notes 6750 4100 0    50   Italic 0
+red
+Text Notes 6750 4700 0    50   Italic 0
+red
+Text Notes 6750 4200 0    50   Italic 0
+black
+Text Notes 6750 4800 0    50   Italic 0
+black
 $EndSCHEMATC
