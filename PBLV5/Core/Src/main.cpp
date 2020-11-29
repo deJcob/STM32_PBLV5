@@ -172,14 +172,6 @@ int _write(int file, char *ptr, int len)
 	return len;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-//	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-	if(GPIO_Pin == USER_Btn_Pin){
-//		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-//		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	}
-}
 //HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|BLUE_LED_Pin, GPIO_PIN_RESET);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -377,6 +369,20 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
  uint8_t imu[4];
 
+ void resetTimerCounter(TIM_HandleTypeDef *htim){
+ 	htim->Instance->CNT = 0;
+ }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == ENCODER1_Z_Pin){
+		resetTimerCounter(&htim3);
+	}
+	if(GPIO_Pin == ENCODER2_Z_Pin){
+		resetTimerCounter(&htim8);
+	}
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -463,14 +469,53 @@ int main(void)
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
     HAL_TIM_Base_Start_IT(&htim11);
 
+    //calibrate wheels position
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
+	uint8_t dataBufferLeft[8];
+	dataBufferLeft[0] = (uint8_t)0x10;//kierunek
+	dataBufferLeft[1] = (uint8_t)0xFF;//starszy bajt pwm
+	dataBufferLeft[2] = (uint8_t)0xFF;//mlodszy bajt pwm
+	dataBufferLeft[3] = (uint8_t)0xFF;//starszy bajt dr pwm
+	dataBufferLeft[4] = (uint8_t)0xFF;//mlodszy bajt dr pwm
+	dataBufferLeft[5] = (uint8_t)0x00;//starszy bajt casu trwania rozkazu
+	dataBufferLeft[6] = (uint8_t)0xC8;//mlodszy
+	dataBufferLeft[7] = (uint8_t)0x00;//kolejkowanie
+	uint8_t dataBufferRight[8];
+	dataBufferRight[0] = (uint8_t)0x01;//kierunek
+	dataBufferRight[1] = (uint8_t)0xFF;//starszy bajt pwm
+	dataBufferRight[2] = (uint8_t)0xFF;//mlodszy bajt pwm
+	dataBufferRight[3] = (uint8_t)0xFF;//starszy bajt dr pwm
+	dataBufferRight[4] = (uint8_t)0xFF;//mlodszy bajt dr pwm
+	dataBufferRight[5] = (uint8_t)0x00;//starszy bajt casu trwania rozkazu
+	dataBufferRight[6] = (uint8_t)0xC8;//mlodszy
+	dataBufferRight[7] = (uint8_t)0x00;//kolejkowanie
+	uint8_t dataBufferStop[8];
+	dataBufferStop[0] = (uint8_t)0x00;//kierunek
+	dataBufferStop[1] = (uint8_t)0x00;//starszy bajt pwm
+	dataBufferStop[2] = (uint8_t)0x00;//mlodszy bajt pwm
+	dataBufferStop[3] = (uint8_t)0x00;//starszy bajt dr pwm
+	dataBufferStop[4] = (uint8_t)0x00;//mlodszy bajt dr pwm
+	dataBufferStop[5] = (uint8_t)0x03;//starszy bajt casu trwania rozkazu
+	dataBufferStop[6] = (uint8_t)0xE8;//mlodszy
+	dataBufferStop[7] = (uint8_t)0x00;//kolejkowanie
 
-/*  HAL_TIM_Base_Start_IT(&htim7);
-  HAL_TIM_Base_Start_IT(&htim6);
-  HAL_TIM_Base_Start_IT(&htim9);
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+	do{
+		drivingSystem.configureDesiredPWM(dataBufferLeft);
+	}while(HAL_GPIO_ReadPin(ENCODER1_Z_GPIO_Port, ENCODER1_Z_Pin)!= GPIO_PIN_RESET);
+	drivingSystem.configureDesiredPWM(dataBufferStop);
 
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);*/
+	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	do{
+		drivingSystem.configureDesiredPWM(dataBufferRight);
+	}while(HAL_GPIO_ReadPin(ENCODER2_Z_GPIO_Port, ENCODER2_Z_Pin)!= GPIO_PIN_RESET);
+	drivingSystem.configureDesiredPWM(dataBufferStop);
+
+	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -478,18 +523,6 @@ int main(void)
   while (1)
   {
 	  MX_LWIP_Process();
-
-/*		HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-		HAL_Delay(500);*/
-/*		HAL_GPIO_TogglePin(BRIDGE_A1_GPIO_Port, BRIDGE_A1_Pin);
-		HAL_Delay(500);*/
-//	  		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-
-
 
     /* USER CODE END WHILE */
 
@@ -707,7 +740,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 180;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 9999;
+  htim1.Init.Period = 999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -1416,6 +1449,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : ENCODER1_Z_Pin ENCODER2_Z_Pin */
+  GPIO_InitStruct.Pin = ENCODER1_Z_Pin|ENCODER2_Z_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
   /*Configure GPIO pins : STLK_RX_Pin STLK_TX_Pin */
   GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -1450,6 +1489,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI1_SS_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
