@@ -22,7 +22,7 @@
 #define INNER_WHEEL_RATIO 4.77
 #define EXTERN_WHEEL_RATIO 7.2
 
-#define HALF_OF_TIM_ARR 32767
+#define HALF_OF_TIM_ARR 51
 
 #define ENCODER_OBJECTDATAVOLUME 9
 
@@ -51,6 +51,8 @@ class Encoder {
 	floatUnion distance;
 	uint8_t numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	status encoderState = idle_stat;
+	uint8_t controlSumOfZSensor = 0;
+	bool thisIsFirstTimeHere = true;
 
 	bool checkIfMoveMade();
 	bool checkIfOverflow();
@@ -62,6 +64,7 @@ public:
 
 	void initialize(TIM_HandleTypeDef* htim);
 	void encoderIteration();
+	int16_t returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition();
 
 	uint8_t getDataInArray(uint8_t* dataBuffer);
 };

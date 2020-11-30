@@ -137,7 +137,6 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM9_Init(void);
@@ -156,6 +155,7 @@ static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -172,6 +172,7 @@ int _write(int file, char *ptr, int len)
 	return len;
 }
 
+
 //HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|BLUE_LED_Pin, GPIO_PIN_RESET);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -179,41 +180,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //Jacke
 	if (htim->Instance == TIM7)
 	{
-		//tu ramke stworzyc
-		uint8_t dataBuffer[8];
-		dataBuffer[0] = (uint8_t)0x11;//kierunek
-		dataBuffer[1] = (uint8_t)0x00;//starszy bajt pwm
-		dataBuffer[2] = (uint8_t)0x64;//mlodszy bajt pwm
-		dataBuffer[3] = (uint8_t)0x01;//starszy bajt dr pwm
-		dataBuffer[4] = (uint8_t)0xF4;//mlodszy bajt dr pwm
-		dataBuffer[5] = (uint8_t)0x03;//starszy bajt casu trwania rozkazu
-		dataBuffer[6] = (uint8_t)0xE8;//mlodszy
-		dataBuffer[7] = (uint8_t)0x01;//kolejkowanie
-
-//		drivingSystem.configureDesiredPWM(dataBuffer);
-
-		dataBuffer[0] = (uint8_t)0x22;
-		dataBuffer[1] = (uint8_t)0x01;
-		dataBuffer[2] = (uint8_t)0xF4;
-		dataBuffer[3] = (uint8_t)0x00;
-		dataBuffer[4] = (uint8_t)0x64;
-		dataBuffer[5] = (uint8_t)0x03;
-		dataBuffer[6] = (uint8_t)0xE8;
-		dataBuffer[7] = (uint8_t)0x01;
-
-//		drivingSystem.configureDesiredPWM(dataBuffer);
-
 		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-
-/*		HAL_GPIO_TogglePin(BRIDGE_A1_GPIO_Port, BRIDGE_A1_Pin);
-		HAL_GPIO_TogglePin(BRIDGE_A2_GPIO_Port, BRIDGE_A2_Pin);
-		HAL_GPIO_TogglePin(BRIDGE_B1_GPIO_Port, BRIDGE_B1_Pin);
-		HAL_GPIO_TogglePin(BRIDGE_B2_GPIO_Port, BRIDGE_B2_Pin);*/
-		//drivingSystem.drivingService();
-		//drivingSystem.configureDesiredPWM(dataBuffer);
-
-//		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 	}
 	if (htim->Instance == TIM6)
 	{
@@ -369,16 +336,17 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
  uint8_t imu[4];
 
- void resetTimerCounter(TIM_HandleTypeDef *htim){
- 	htim->Instance->CNT = 0;
- }
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == ENCODER1_Z_Pin){
-		resetTimerCounter(&htim3);
+		if(encoderSystem.diffBetweenPreviousZ(0)>0){
+			//blink error led
+		}
+
 	}
 	if(GPIO_Pin == ENCODER2_Z_Pin){
-		resetTimerCounter(&htim8);
+		if(encoderSystem.diffBetweenPreviousZ(1)>0){
+			//blink error led
+		};
 	}
 }
 
@@ -414,7 +382,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USB_OTG_FS_PCD_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_TIM9_Init();
@@ -434,6 +401,7 @@ int main(void)
   MX_UART5_Init();
   MX_USART2_UART_Init();
   MX_USART6_UART_Init();
+  MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
   canLidar.configureCAN();
@@ -469,52 +437,6 @@ int main(void)
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
     HAL_TIM_Base_Start_IT(&htim11);
 
-    //calibrate wheels position
-	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-
-	uint8_t dataBufferLeft[8];
-	dataBufferLeft[0] = (uint8_t)0x10;//kierunek
-	dataBufferLeft[1] = (uint8_t)0xFF;//starszy bajt pwm
-	dataBufferLeft[2] = (uint8_t)0xFF;//mlodszy bajt pwm
-	dataBufferLeft[3] = (uint8_t)0xFF;//starszy bajt dr pwm
-	dataBufferLeft[4] = (uint8_t)0xFF;//mlodszy bajt dr pwm
-	dataBufferLeft[5] = (uint8_t)0x00;//starszy bajt casu trwania rozkazu
-	dataBufferLeft[6] = (uint8_t)0xC8;//mlodszy
-	dataBufferLeft[7] = (uint8_t)0x00;//kolejkowanie
-	uint8_t dataBufferRight[8];
-	dataBufferRight[0] = (uint8_t)0x01;//kierunek
-	dataBufferRight[1] = (uint8_t)0xFF;//starszy bajt pwm
-	dataBufferRight[2] = (uint8_t)0xFF;//mlodszy bajt pwm
-	dataBufferRight[3] = (uint8_t)0xFF;//starszy bajt dr pwm
-	dataBufferRight[4] = (uint8_t)0xFF;//mlodszy bajt dr pwm
-	dataBufferRight[5] = (uint8_t)0x00;//starszy bajt casu trwania rozkazu
-	dataBufferRight[6] = (uint8_t)0xC8;//mlodszy
-	dataBufferRight[7] = (uint8_t)0x00;//kolejkowanie
-	uint8_t dataBufferStop[8];
-	dataBufferStop[0] = (uint8_t)0x00;//kierunek
-	dataBufferStop[1] = (uint8_t)0x00;//starszy bajt pwm
-	dataBufferStop[2] = (uint8_t)0x00;//mlodszy bajt pwm
-	dataBufferStop[3] = (uint8_t)0x00;//starszy bajt dr pwm
-	dataBufferStop[4] = (uint8_t)0x00;//mlodszy bajt dr pwm
-	dataBufferStop[5] = (uint8_t)0x03;//starszy bajt casu trwania rozkazu
-	dataBufferStop[6] = (uint8_t)0xE8;//mlodszy
-	dataBufferStop[7] = (uint8_t)0x00;//kolejkowanie
-
-	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-	do{
-		drivingSystem.configureDesiredPWM(dataBufferLeft);
-	}while(HAL_GPIO_ReadPin(ENCODER1_Z_GPIO_Port, ENCODER1_Z_Pin)!= GPIO_PIN_RESET);
-	drivingSystem.configureDesiredPWM(dataBufferStop);
-
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-	do{
-		drivingSystem.configureDesiredPWM(dataBufferRight);
-	}while(HAL_GPIO_ReadPin(ENCODER2_Z_GPIO_Port, ENCODER2_Z_Pin)!= GPIO_PIN_RESET);
-	drivingSystem.configureDesiredPWM(dataBufferStop);
-
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
   /* USER CODE END 2 */
 
@@ -822,7 +744,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
+  htim3.Init.Period = 103;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
@@ -947,7 +869,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 65535;
+  htim8.Init.Period = 103;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;

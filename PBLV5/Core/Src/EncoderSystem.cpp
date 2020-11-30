@@ -25,6 +25,10 @@ void EncoderSystem::encoderService()
 	}
 }
 
+int16_t EncoderSystem::diffBetweenPreviousZ(uint8_t encoderIndex){
+	return encoders[encoderIndex].returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition();
+}
+
 uint8_t EncoderSystem::getDataInArray(uint8_t* dataBuffer)
 {
 	uint8_t dataToReturnMain[ENCODER_SYS_OBJECTDATAVOLUME];
