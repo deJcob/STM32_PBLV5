@@ -111,6 +111,8 @@ RFIDManager rfidManager(&hdma_uart4_rx);
 Electromagnet electromagnet;
 TimeMeasurementSystem timMeasureSystem(&htim14);
 UltrasoundManager ultrasoundManager(&hdma_uart5_rx, &huart5);
+int16_t diffZOne = 0;
+int16_t diffZTwo = 0;
 
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 {
@@ -338,14 +340,16 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == ENCODER1_Z_Pin){
-		if(encoderSystem.diffBetweenPreviousZ(0)>0){
+		if(encoderSystem.diffBetweenPreviousZ(0)!=0){
 			//blink error led
+			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
 		}
 
 	}
 	if(GPIO_Pin == ENCODER2_Z_Pin){
-		if(encoderSystem.diffBetweenPreviousZ(1)>0){
+		if(encoderSystem.diffBetweenPreviousZ(1)!=0){
 			//blink error led
+			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
 		};
 	}
 }
@@ -660,7 +664,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 180;
+  htim1.Init.Prescaler = 179;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -828,7 +832,7 @@ static void MX_TIM7_Init(void)
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 8999;
+  htim7.Init.Prescaler = 10799;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim7.Init.Period = 9999;
   htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
