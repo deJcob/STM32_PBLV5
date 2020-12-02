@@ -114,6 +114,9 @@ UltrasoundManager ultrasoundManager(&hdma_uart5_rx, &huart5);
 int16_t diffZOne = 0;
 int16_t diffZTwo = 0;
 
+int16_t diffZOneTimerValue = 0;
+int16_t diffZTwoTimerValue = 0;
+
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 {
 	{ID_PWM, DataPtrVolumePair{1, SIZE_GET_PWM, std::bind(&DrivingSystem::getDataInArray, &drivingSystem, std::placeholders::_1)}},
@@ -243,6 +246,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			timMeasureSystem.takeTS(5);
 		}
 
+		if (htim->Instance == TIM14)
+		{
+
+			if(diffZOneTimerValue > 0){
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+			diffZOneTimerValue--;
+			}
+
+			if(diffZTwoTimerValue > 0){
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+			diffZTwoTimerValue--;
+			}
+
+		}
+
 }
 
 
@@ -343,6 +361,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		if(encoderSystem.diffBetweenPreviousZ(0)!=0){
 			//blink error led
 			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
+			diffZOneTimerValue = abs(diffZOne);
 		}
 
 	}
@@ -350,6 +369,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		if(encoderSystem.diffBetweenPreviousZ(1)!=0){
 			//blink error led
 			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
+			diffZTwoTimerValue = abs(diffZTwo);
 		};
 	}
 }
@@ -1088,9 +1108,9 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 89;
+  htim14.Init.Prescaler = 2399;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 65500;
+  htim14.Init.Period = 9999;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
