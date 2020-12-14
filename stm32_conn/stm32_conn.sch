@@ -6,8 +6,8 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 3
 Title "STM32F4 based AGV-ROS module"
-Date "2020-11-25"
-Rev "6.3"
+Date "2020-12-03"
+Rev "6.4"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -920,16 +920,12 @@ Wire Wire Line
 	9500 1650 9350 1650
 Wire Wire Line
 	9500 1350 9350 1350
-Text Notes 9100 1400 0    50   ~ 10
-TODO
 Wire Notes Line
 	10550 650  8950 650 
 Text Notes 11600 5750 0    50   Italic 0
 EN input are used to\nturn on the MOSFETs.\nCould be used for \novercurrent protection \n(R8 i R9 should be around \n10k for OCP 2.5A\nTypically there are 5.1k \nresistors here - 5A OCP)
 Text Notes 11600 5950 0    50   Italic 0
 ADCs are not used and\nshould be connected to GND.
-Text Notes 9100 1700 0    50   ~ 10
-TODO
 Text Notes 8150 2950 0    98   Italic 20
 TODO: electronic ruller \n
 Text Notes 14350 6550 0    50   Italic 0
@@ -1214,8 +1210,6 @@ NoConn ~ 2150 8700
 NoConn ~ 2150 8800
 NoConn ~ 2150 8900
 NoConn ~ 2150 9000
-NoConn ~ 2150 9100
-NoConn ~ 2150 9200
 NoConn ~ 2150 9500
 Text Label 2150 8100 2    50   Italic 0
 SPI1_SS
@@ -1708,6 +1702,20 @@ Wire Notes Line
 	11450 900  11450 9850
 Wire Notes Line
 	15900 900  15900 9850
+Text GLabel 9350 1350 0    50   Input ~ 0
+PE11
+Text GLabel 9350 1650 0    50   Input ~ 0
+PE12
+Wire Wire Line
+	2150 9200 1600 9200
+Wire Wire Line
+	2150 9100 1600 9100
+Text GLabel 1600 9200 0    50   Input ~ 0
+PE12
+Text GLabel 1600 9100 0    50   Input ~ 0
+PE11
+Text Label 2150 9100 2    50   Italic 0
+ENCODER1_Z
 Wire Bus Line
 	12900 8100 13850 8100
 Wire Bus Line
@@ -1716,4 +1724,6 @@ Wire Bus Line
 	13500 4250 14400 4250
 Wire Bus Line
 	12900 6400 13850 6400
+Text Label 2150 9200 2    50   Italic 0
+ENCODER2_Z
 $EndSCHEMATC
