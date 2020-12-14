@@ -116,6 +116,14 @@ void Encoder::encoderIteration()
 	}
 }
 
+int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition(){
+	if(this->thisIsFirstTimeHere){
+		this->thisIsFirstTimeHere = false;
+		this->controlSumOfZSensor = (uint8_t)htim->Instance->CNT;
+	}
+	return ((int16_t)controlSumOfZSensor - (int16_t)htim->Instance->CNT);
+}
+
 uint8_t Encoder::getDataInArray(uint8_t* dataBuffer)
 {
 	uint8_t dataToReturn[ENCODER_OBJECTDATAVOLUME];

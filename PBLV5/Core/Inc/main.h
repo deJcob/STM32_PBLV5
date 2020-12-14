@@ -62,6 +62,7 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
+#define USER_Btn_EXTI_IRQn EXTI15_10_IRQn
 #define BRIDGE_B1_Pin GPIO_PIN_3
 #define BRIDGE_B1_GPIO_Port GPIOF
 #define BRIDGE_A2_Pin GPIO_PIN_5
@@ -88,6 +89,12 @@ void Error_Handler(void);
 #define RMII_RXD1_GPIO_Port GPIOC
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
+#define ENCODER1_Z_Pin GPIO_PIN_11
+#define ENCODER1_Z_GPIO_Port GPIOE
+#define ENCODER1_Z_EXTI_IRQn EXTI15_10_IRQn
+#define ENCODER2_Z_Pin GPIO_PIN_12
+#define ENCODER2_Z_GPIO_Port GPIOE
+#define ENCODER2_Z_EXTI_IRQn EXTI15_10_IRQn
 #define RMII_TXD1_Pin GPIO_PIN_13
 #define RMII_TXD1_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_14

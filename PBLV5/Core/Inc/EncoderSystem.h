@@ -36,6 +36,7 @@ public:
 	virtual ~EncoderSystem();
 
 	void encoderService();
+	int16_t diffBetweenPreviousZ(uint8_t encoderIndex);
 
 	uint8_t getDataInArray(uint8_t* dataBuffer);
 };

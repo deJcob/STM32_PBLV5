@@ -111,6 +111,11 @@ RFIDManager rfidManager(&hdma_uart4_rx);
 Electromagnet electromagnet;
 TimeMeasurementSystem timMeasureSystem(&htim14);
 UltrasoundManager ultrasoundManager(&hdma_uart5_rx, &huart5);
+int16_t diffZOne = 0;
+int16_t diffZTwo = 0;
+
+int16_t diffZOneTimerValue = 0;
+int16_t diffZTwoTimerValue = 0;
 
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 {
@@ -137,7 +142,6 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM9_Init(void);
@@ -156,6 +160,7 @@ static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_USB_OTG_FS_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -172,14 +177,7 @@ int _write(int file, char *ptr, int len)
 	return len;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-//	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-	if(GPIO_Pin == USER_Btn_Pin){
-//		HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-//		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	}
-}
+
 //HAL_GPIO_WritePin(GPIOB, RED_LED_Pin|BLUE_LED_Pin, GPIO_PIN_RESET);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -245,6 +243,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			ultrasoundManager.fetchDistanceData();
 
 			timMeasureSystem.takeTS(5);
+		}
+
+		if (htim->Instance == TIM14)
+		{
+
+			if(diffZOneTimerValue > 0){
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+			diffZOneTimerValue--;
+			}
+
+			if(diffZTwoTimerValue > 0){
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+			diffZTwoTimerValue--;
+			}
+
 		}
 
 }
@@ -342,6 +355,25 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
  uint8_t imu[4];
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == ENCODER1_Z_Pin){
+		if(encoderSystem.diffBetweenPreviousZ(0)!=0){
+			//blink error led
+			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
+			diffZOneTimerValue = abs(diffZOne);
+		}
+
+	}
+	if(GPIO_Pin == ENCODER2_Z_Pin){
+		if(encoderSystem.diffBetweenPreviousZ(1)!=0){
+			//blink error led
+			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
+			diffZTwoTimerValue = abs(diffZTwo);
+		};
+	}
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -373,7 +405,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USB_OTG_FS_PCD_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_TIM9_Init();
@@ -393,6 +424,7 @@ int main(void)
   MX_UART5_Init();
   MX_USART2_UART_Init();
   MX_USART6_UART_Init();
+  MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
 
   canLidar.configureCAN();
@@ -659,9 +691,9 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 180;
+  htim1.Init.Prescaler = 179;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 9999;
+  htim1.Init.Period = 999;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -743,7 +775,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
+  htim3.Init.Period = 103;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
@@ -827,7 +859,7 @@ static void MX_TIM7_Init(void)
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 8999;
+  htim7.Init.Prescaler = 10799;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim7.Init.Period = 9999;
   htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -868,7 +900,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 65535;
+  htim8.Init.Period = 103;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -1083,9 +1115,9 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 89;
+  htim14.Init.Prescaler = 2399;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 65500;
+  htim14.Init.Period = 9999;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
@@ -1370,6 +1402,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : ENCODER1_Z_Pin ENCODER2_Z_Pin */
+  GPIO_InitStruct.Pin = ENCODER1_Z_Pin|ENCODER2_Z_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
   /*Configure GPIO pins : STLK_RX_Pin STLK_TX_Pin */
   GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -1404,6 +1442,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI1_SS_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 
