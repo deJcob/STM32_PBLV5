@@ -1246,7 +1246,6 @@ NoConn ~ 2150 6700
 NoConn ~ 2150 6900
 NoConn ~ 2150 7000
 NoConn ~ 2150 7100
-NoConn ~ 2150 7400
 NoConn ~ 2150 7500
 NoConn ~ 2150 7600
 NoConn ~ 2150 7700
@@ -1259,7 +1258,7 @@ Text Label 2150 7200 2    50   Italic 0
 TESTOWA
 Text Label 2150 7300 2    50   Italic 0
 BRIDGE_A1
-Text GLabel 1650 7300 0    50   Input ~ 0
+Text GLabel 1600 7300 0    50   Input ~ 0
 PF10
 Text GLabel 1650 6800 0    50   Input ~ 0
 PF5
@@ -1270,7 +1269,7 @@ Wire Wire Line
 Wire Wire Line
 	2150 6800 1650 6800
 Wire Wire Line
-	1650 7300 2150 7300
+	1600 7300 2150 7300
 Wire Wire Line
 	2150 7200 1750 7200
 NoConn ~ 1750 7200
@@ -1703,19 +1702,22 @@ Wire Notes Line
 Wire Notes Line
 	15900 900  15900 9850
 Text GLabel 9350 1350 0    50   Input ~ 0
-PE11
+PF11
 Text GLabel 9350 1650 0    50   Input ~ 0
 PE12
 Wire Wire Line
 	2150 9200 1600 9200
-Wire Wire Line
-	2150 9100 1600 9100
 Text GLabel 1600 9200 0    50   Input ~ 0
 PE12
-Text GLabel 1600 9100 0    50   Input ~ 0
-PE11
-Text Label 2150 9100 2    50   Italic 0
+Text GLabel 1600 7400 0    50   Input ~ 0
+PF11
+Text Label 2150 7400 2    50   Italic 0
 ENCODER1_Z
+Text Label 2150 9200 2    50   Italic 0
+ENCODER2_Z
+NoConn ~ 2150 9100
+Wire Wire Line
+	1600 7400 2150 7400
 Wire Bus Line
 	12900 8100 13850 8100
 Wire Bus Line
@@ -1724,6 +1726,4 @@ Wire Bus Line
 	13500 4250 14400 4250
 Wire Bus Line
 	12900 6400 13850 6400
-Text Label 2150 9200 2    50   Italic 0
-ENCODER2_Z
 $EndSCHEMATC

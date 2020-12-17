@@ -20,13 +20,14 @@
 #define DEFAULT_NUM_OF_CHECKS 20
 
 #define INNER_WHEEL_RATIO 4.77
-#define EXTERN_WHEEL_RATIO 7.2
+#define EXTERN_WHEEL_RATIO 4.02 // obwód koła podzielony przez ilość impulsów
 
-#define HALF_OF_TIM_ARR 51
+#define HALF_OF_TIM_ARR 49
 
 #define ENCODER_OBJECTDATAVOLUME 9
 
-class Encoder {
+class Encoder
+{
 
 	enum status
 	{
@@ -35,7 +36,7 @@ class Encoder {
 		backRun
 	};
 
-	TIM_HandleTypeDef* htim;
+	TIM_HandleTypeDef *htim;
 
 	uint16_t presentTimRegisterValue = 0;
 	uint16_t lastTimRegisterValue = 0;
@@ -62,11 +63,11 @@ public:
 	Encoder();
 	virtual ~Encoder();
 
-	void initialize(TIM_HandleTypeDef* htim);
+	void initialize(TIM_HandleTypeDef *htim);
 	void encoderIteration();
 	int16_t returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition();
 
-	uint8_t getDataInArray(uint8_t* dataBuffer);
+	uint8_t getDataInArray(uint8_t *dataBuffer);
 };
 
 #endif /* ENCODER_H_ */

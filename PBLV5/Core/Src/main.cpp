@@ -248,14 +248,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		if (htim->Instance == TIM14)
 		{
 
-			if(diffZOneTimerValue > 0){
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-			diffZOneTimerValue--;
+			if (diffZOneTimerValue > 0)
+			{
+				//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+				diffZOneTimerValue--;
 			}
 
-			if(diffZTwoTimerValue > 0){
-			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-			diffZTwoTimerValue--;
+			if (diffZTwoTimerValue > 0)
+			{
+				//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+				diffZTwoTimerValue--;
 			}
 
 		}
@@ -355,18 +357,25 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 }
  uint8_t imu[4];
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if(GPIO_Pin == ENCODER1_Z_Pin){
-		if(encoderSystem.diffBetweenPreviousZ(0)!=0){
-			//blink error led
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if (GPIO_Pin == ENCODER1_Z_Pin)
+	{
+		if (encoderSystem.diffBetweenPreviousZ(0) != 0)
+		{
+			// set error state
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
 			diffZOneTimerValue = abs(diffZOne);
 		}
 
 	}
-	if(GPIO_Pin == ENCODER2_Z_Pin){
-		if(encoderSystem.diffBetweenPreviousZ(1)!=0){
-			//blink error led
+	if (GPIO_Pin == ENCODER2_Z_Pin)
+	{
+		if(encoderSystem.diffBetweenPreviousZ(1) != 0)
+		{
+			// set error state
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
 			diffZTwoTimerValue = abs(diffZTwo);
 		};
@@ -1402,11 +1411,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : ENCODER1_Z_Pin ENCODER2_Z_Pin */
-  GPIO_InitStruct.Pin = ENCODER1_Z_Pin|ENCODER2_Z_Pin;
+  /*Configure GPIO pin : ENCODER1_Z_Pin */
+  GPIO_InitStruct.Pin = ENCODER1_Z_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(ENCODER1_Z_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : ENCODER2_Z_Pin */
+  GPIO_InitStruct.Pin = ENCODER2_Z_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ENCODER2_Z_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : STLK_RX_Pin STLK_TX_Pin */
   GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;

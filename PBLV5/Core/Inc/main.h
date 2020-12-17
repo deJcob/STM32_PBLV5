@@ -90,7 +90,7 @@ void Error_Handler(void);
 #define LD1_Pin GPIO_PIN_0
 #define LD1_GPIO_Port GPIOB
 #define ENCODER1_Z_Pin GPIO_PIN_11
-#define ENCODER1_Z_GPIO_Port GPIOE
+#define ENCODER1_Z_GPIO_Port GPIOF
 #define ENCODER1_Z_EXTI_IRQn EXTI15_10_IRQn
 #define ENCODER2_Z_Pin GPIO_PIN_12
 #define ENCODER2_Z_GPIO_Port GPIOE
