@@ -7,15 +7,16 @@
 
 #include <Encoder.h>
 
-Encoder::Encoder(): speedBuffer(DEFAULT_NUM_OF_CHECKS)
+Encoder::Encoder() : speedBuffer(DEFAULT_NUM_OF_CHECKS)
 {
 }
 
-Encoder::~Encoder() {
+Encoder::~Encoder()
+{
 	// TODO Auto-generated destructor stub
 }
 
-void Encoder::initialize(TIM_HandleTypeDef* htim)
+void Encoder::initialize(TIM_HandleTypeDef *htim)
 {
 	this->htim = htim;
 }
@@ -24,8 +25,19 @@ bool Encoder::checkIfMoveMade()
 {
 	presentTimRegisterValue = htim->Instance->CNT;
 	diff = presentTimRegisterValue - lastTimRegisterValue;
+	if (checkIfOverflow())
+	{
+		if (lastTimRegisterValue > HALF_OF_TIM_ARR)
+		{
+			diff = PULSE_QUANTITY - lastTimRegisterValue + presentTimRegisterValue; // z 99 -> 0
+		}
+		else
+		{
+			diff = PULSE_QUANTITY + lastTimRegisterValue - presentTimRegisterValue; // z 0 -> 99
+		}
+	}
 
-	if(abs(diff) > 0)
+	if (abs(diff) > 0)
 	{
 		presentTimeStamp = HAL_GetTick();
 		elapsedTime = presentTimeStamp - lastTimeStamp;
@@ -41,7 +53,7 @@ bool Encoder::checkIfMoveMade()
 
 bool Encoder::checkIfOverflow()
 {
-	if(abs(diff) > HALF_OF_TIM_ARR)
+	if (abs(diff) > HALF_OF_TIM_ARR)
 	{
 		return true;
 	}
@@ -53,26 +65,41 @@ bool Encoder::checkIfOverflow()
 
 void Encoder::calcSpeed()
 {
+
+#ifdef RAD_SPEED
+	tempSpeed.floatVal = (((uint16_t)diff * ANGLE_PER_PULSE_RAD) / ((elapsedTime) / 1000.0)); // RAD/s
+
+	speedBuffer.put(tempSpeed);
+
+	for (uint8_t i = 0; i < speedBuffer.size(); i++)
+	{
+		tempSpeed.floatVal += speedBuffer.getOfIndex(i).floatVal;
+	}
+
+	speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
+	distance.floatVal = (abs(diff) * ANGLE_PER_PULSE_RAD); // RAD
+#else
 	tempSpeed.floatVal = ((abs(diff) * EXTERN_WHEEL_RATIO) / 10.0) / ((elapsedTime) / 1000.0);
 
 	speedBuffer.put(tempSpeed);
 
-	for(uint8_t i = 0; i < speedBuffer.size(); i++)
+	for (uint8_t i = 0; i < speedBuffer.size(); i++)
 	{
 		tempSpeed.floatVal += speedBuffer.getOfIndex(i).floatVal;
 	}
 
 	speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
 	distance.floatVal = (abs(diff) * EXTERN_WHEEL_RATIO) / 10.0;
+#endif
 }
 
 void Encoder::encoderIteration()
 {
-	if(checkIfMoveMade())
+	if (checkIfMoveMade())
 	{
-		if(diff > 0)
+		if (diff > 0)
 		{
-			if(checkIfOverflow())
+			if (checkIfOverflow())
 			{
 				encoderState = backRun;
 			}
@@ -83,7 +110,7 @@ void Encoder::encoderIteration()
 		}
 		else
 		{
-			if(checkIfOverflow())
+			if (checkIfOverflow())
 			{
 				encoderState = forwardRun;
 			}
@@ -105,7 +132,7 @@ void Encoder::encoderIteration()
 
 		distance.floatVal = 0;
 
-		if(!numberOfGoOnChecks)
+		if (!numberOfGoOnChecks)
 		{
 			speed.floatVal = 0;
 			encoderState = idle_stat;
@@ -116,15 +143,17 @@ void Encoder::encoderIteration()
 	}
 }
 
-int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition(){
-	if(this->thisIsFirstTimeHere){
+int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition()
+{
+	if (this->thisIsFirstTimeHere)
+	{
 		this->thisIsFirstTimeHere = false;
 		this->controlSumOfZSensor = (uint8_t)htim->Instance->CNT;
 	}
 	return ((int16_t)controlSumOfZSensor - (int16_t)htim->Instance->CNT);
 }
 
-uint8_t Encoder::getDataInArray(uint8_t* dataBuffer)
+uint8_t Encoder::getDataInArray(uint8_t *dataBuffer)
 {
 	uint8_t dataToReturn[ENCODER_OBJECTDATAVOLUME];
 
@@ -137,7 +166,6 @@ uint8_t Encoder::getDataInArray(uint8_t* dataBuffer)
 	dataToReturn[6] = distance.arrVal[2];
 	dataToReturn[7] = distance.arrVal[1];
 	dataToReturn[8] = distance.arrVal[0];
-
 
 	std::copy_n(dataToReturn, ENCODER_OBJECTDATAVOLUME, dataBuffer);
 

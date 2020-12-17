@@ -17,10 +17,15 @@
 #define LEFT_ENCODER 0
 #define RIGHT_ENCODER 1
 
+#define RAD_SPEED
+
 #define DEFAULT_NUM_OF_CHECKS 20
 
 #define INNER_WHEEL_RATIO 4.77
 #define EXTERN_WHEEL_RATIO 4.02 // obwód koła podzielony przez ilość impulsów
+
+#define PULSE_QUANTITY 100
+#define ANGLE_PER_PULSE_RAD (float)0.062831853071795864
 
 #define HALF_OF_TIM_ARR 49
 
