@@ -8,7 +8,7 @@
 #ifndef XNUCLEOSHIELDSENSORSV3_H_
 #define XNUCLEOSHIELDSENSORSV3_H_
 
-//#define XNucleoV3
+#define XNucleoV3
 
 #define LSM6DSO_GYRO_SENS_ADDR (0x6B << 1)
 #define LSM6DSO_GYRO_CTRL_REG_2 0x11
@@ -38,6 +38,5 @@
 #define LIS2MDL_MAG_DATA_SIZE 6
 
 #define LIS2MDL_WHO_AM_I 0x4F
-
 
 #endif /* XNUCLEOSHIELDSENSORSV3_H_ */
