@@ -7,7 +7,7 @@ encoding utf-8
 Sheet 1 5
 Title "STM32F7 based AGV-ROS module"
 Date "2021-01-02"
-Rev "7.0"
+Rev "7.1"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -1045,8 +1045,6 @@ NoConn ~ 4750 3850
 NoConn ~ 4550 3950
 NoConn ~ 4550 3050
 NoConn ~ 4550 2950
-NoConn ~ 4550 2850
-NoConn ~ 4550 2450
 Text Label 4550 5850 0    50   Italic 0
 BRIDGE_B2
 Text Label 4550 5950 0    50   Italic 0
@@ -1370,17 +1368,11 @@ Text GLabel 14700 5300 2    50   Input ~ 0
 PE13
 NoConn ~ 5350 8250
 Wire Wire Line
-	4550 2750 5500 2750
-Text GLabel 5500 2750 2    50   Input ~ 0
-PA3
-Text Label 4550 2750 0    50   Italic 0
+	4550 2850 5500 2850
+Text GLabel 5500 2850 2    50   Input ~ 0
+PA4
+Text Label 4550 2850 0    50   Italic 0
 CURRENT_SENSOR_LEFT
-Wire Wire Line
-	4550 4250 5500 4250
-Text GLabel 5500 4250 2    50   Input ~ 0
-PB1
-Text Label 4550 4250 0    50   Italic 0
-CURRENT_SENSOR_RIGHT
 Text Notes 13550 4050 1    50   Italic 0
 blue
 Text Notes 13650 4050 1    50   Italic 0
@@ -1536,11 +1528,11 @@ $EndSheet
 Wire Wire Line
 	11750 7700 11600 7700
 Text GLabel 11600 7700 0    50   Input ~ 0
-PA3
+PA4
 Wire Wire Line
 	11750 7400 11600 7400
 Text GLabel 11600 7400 0    50   Input ~ 0
-PB1
+PA0
 Wire Wire Line
 	12450 7300 13150 7300
 Entry Wire Line
@@ -1729,6 +1721,14 @@ Text Notes 11900 9800 0    100  ~ 20
 WARNING: Schematics do not include\nthe proto board under the nucleo-144\nand connectors placed on it\n
 NoConn ~ 1950 3950
 NoConn ~ 1950 3850
+Wire Wire Line
+	4550 2450 5500 2450
+Text GLabel 5500 2450 2    50   Input ~ 0
+PA0
+Text Label 4550 2450 0    50   Italic 0
+CURRENT_SENSOR_RIGHT
+NoConn ~ 4550 2750
+NoConn ~ 4550 4250
 Wire Bus Line
 	12950 7550 13900 7550
 Wire Bus Line
