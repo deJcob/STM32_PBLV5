@@ -4,15 +4,15 @@ EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 4
+Sheet 2 5
 Title "Encoders"
-Date "2020-11-25"
-Rev "1.1"
+Date "2021-01-02"
+Rev "1.2"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "Author: Jakub Kąkiel"
 $EndDescr
 Text HLabel 3750 4200 0    50   Input ~ 0
 A1
