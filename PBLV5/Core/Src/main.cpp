@@ -366,7 +366,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if (encoderSystem.diffBetweenPreviousZ(0) != 0)
 		{
 			// set error state
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+			//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
 			diffZOneTimerValue = abs(diffZOne);
 		}
@@ -377,7 +377,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if(encoderSystem.diffBetweenPreviousZ(1) != 0)
 		{
 			// set error state
-			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+			//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
 			diffZTwoTimerValue = abs(diffZTwo);
 		};
