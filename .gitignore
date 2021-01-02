@@ -6,7 +6,7 @@ PBLV5/Debug/
 *.d
 
 # Compiled Object files
-*.slo
+
 *.lo
 *.o
 *.obj
@@ -34,6 +34,10 @@ PBLV5/Debug/
 *.exe
 *.out
 *.app
+
+#local settings
+PBLV5/.settings/language.settings.xml
+*.orig 
 
 #KiCad files
 *.net
