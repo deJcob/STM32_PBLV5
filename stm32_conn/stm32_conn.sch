@@ -7,7 +7,7 @@ encoding utf-8
 Sheet 1 5
 Title "STM32F7 based AGV-ROS module"
 Date "2021-01-02"
-Rev "7.1"
+Rev "7.2"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -1673,9 +1673,9 @@ U 603CC0C8
 F0 "ruller" 50
 F1 "ruller.sch" 50
 F2 "3V3" I L 10350 1350 50 
-F3 "SDA" I L 10350 1450 50 
-F4 "SCL" I L 10350 1550 50 
-F5 "GND" I L 10350 1650 50 
+F3 "SDA" I L 10350 1550 50 
+F4 "SCL" I L 10350 1650 50 
+F5 "GND" I L 10350 1450 50 
 $EndSheet
 Text Notes 10550 1400 0    50   ~ 0
 /VIN
@@ -1693,30 +1693,26 @@ $EndComp
 $Comp
 L power:GND #PWR0113
 U 1 1 603CD26B
-P 10150 1900
-F 0 "#PWR0113" H 10150 1650 50  0001 C CNN
-F 1 "GND" H 10155 1727 50  0000 C CNN
-F 2 "" H 10150 1900 50  0001 C CNN
-F 3 "" H 10150 1900 50  0001 C CNN
-	1    10150 1900
-	1    0    0    -1  
+P 10050 1450
+F 0 "#PWR0113" H 10050 1200 50  0001 C CNN
+F 1 "GND" V 10055 1277 50  0000 C CNN
+F 2 "" H 10050 1450 50  0001 C CNN
+F 3 "" H 10050 1450 50  0001 C CNN
+	1    10050 1450
+	0    1    1    0   
 $EndComp
-Wire Wire Line
-	10150 1900 10150 1650
-Wire Wire Line
-	10150 1650 10350 1650
 Wire Wire Line
 	10150 1050 10150 1350
 Wire Wire Line
 	10150 1350 10350 1350
-Text GLabel 10050 1450 0    50   Input ~ 0
+Text GLabel 10150 1550 0    50   Input ~ 0
 PF0
-Text GLabel 10050 1550 0    50   Input ~ 0
+Text GLabel 10150 1650 0    50   Input ~ 0
 PF1
 Wire Wire Line
-	10050 1450 10350 1450
+	10150 1550 10350 1550
 Wire Wire Line
-	10350 1550 10050 1550
+	10350 1650 10150 1650
 Text Notes 11900 9800 0    100  ~ 20
 WARNING: Schematics do not include\nthe proto board under the nucleo-144\nand connectors placed on it\n
 NoConn ~ 1950 3950
@@ -1729,6 +1725,8 @@ Text Label 4550 2450 0    50   Italic 0
 CURRENT_SENSOR_RIGHT
 NoConn ~ 4550 2750
 NoConn ~ 4550 4250
+Wire Wire Line
+	10050 1450 10350 1450
 Wire Bus Line
 	12950 7550 13900 7550
 Wire Bus Line
