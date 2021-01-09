@@ -120,7 +120,7 @@ int16_t diffZTwo = 0;
 int16_t diffZOneTimerValue = 0;
 int16_t diffZTwoTimerValue = 0;
 
-uint16_t adcMeasurement[2];
+volatile uint16_t adcMeasurement[2] = { 0 };
 
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 {
@@ -439,6 +439,10 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcMeasurement, 2);
+  //HAL_ADC_Start(&hadc1);
+
   canLidar.configureCAN();
 
     HAL_UART_Receive_DMA(&huart2, gpsManager.getDataBuffer(), gpsManager.getBufferLength());
@@ -448,6 +452,7 @@ int main(void)
 
     HAL_I2C_Init(&hi2c1);
     imuSensors.initializeI2C_Sensors(&hi2c1);
+
 
     drivingSystem.initialize();
 
@@ -471,16 +476,7 @@ int main(void)
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
     HAL_TIM_Base_Start_IT(&htim11);
-    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcMeasurement, 2);
 
-
-
-  HAL_TIM_Base_Start_IT(&htim7);
-  HAL_TIM_Base_Start_IT(&htim6);
-  HAL_TIM_Base_Start_IT(&htim9);
-
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
 
   /* USER CODE END 2 */
 
@@ -599,7 +595,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -1396,12 +1392,12 @@ static void MX_DMA_Init(void)
   /* DMA1_Stream5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
-  /* DMA2_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
   /* DMA2_Stream1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream1_IRQn);
+  /* DMA2_Stream4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
 
 }
 
