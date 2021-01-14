@@ -363,17 +363,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == ENCODER1_Z_Pin)
 	{
-		if (encoderSystem.diffBetweenPreviousZ(0) != 0)
+		/*if (encoderSystem.diffBetweenPreviousZ(0) != 0)
 		{
 			// set error state
 			//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
 			diffZOneTimerValue = abs(diffZOne);
-		}
+		} */
 
 	}
 	if (GPIO_Pin == ENCODER2_Z_Pin)
 	{
+		/*
 		if(encoderSystem.diffBetweenPreviousZ(1) != 0)
 		{
 			// set error state
@@ -381,6 +382,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
 			diffZTwoTimerValue = abs(diffZTwo);
 		};
+		*/
 	}
 }
 
@@ -842,18 +844,18 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 99;
+  htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 15;
+  sConfig.IC1Filter = 6;
   sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 15;
+  sConfig.IC2Filter = 6;
   if (HAL_TIM_Encoder_Init(&htim3, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -967,7 +969,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 99;
+  htim8.Init.Period = 65535;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -975,11 +977,11 @@ static void MX_TIM8_Init(void)
   sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 15;
+  sConfig.IC1Filter = 6;
   sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
   sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 15;
+  sConfig.IC2Filter = 6;
   if (HAL_TIM_Encoder_Init(&htim8, &sConfig) != HAL_OK)
   {
     Error_Handler();

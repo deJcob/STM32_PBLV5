@@ -19,15 +19,15 @@
 
 #define RAD_SPEED
 
-#define DEFAULT_NUM_OF_CHECKS 20
+#define DEFAULT_NUM_OF_CHECKS 10 // jak pojazd sie zatrzyma to jeszcze przez tyle sprawdzamy czy sie zatrzymals
 
 #define INNER_WHEEL_RATIO 4.77
 #define EXTERN_WHEEL_RATIO 4.02 // obwód koła podzielony przez ilość impulsów
 
-#define PULSE_QUANTITY 100
-#define ANGLE_PER_PULSE_RAD (float)0.062831853071795864
+#define PULSE_QUANTITY 256
+#define ANGLE_PER_PULSE_RAD (float)0.024543692606170
 
-#define HALF_OF_TIM_ARR 49
+#define HALF_OF_TIM_ARR 32767
 
 #define ENCODER_OBJECTDATAVOLUME 9
 
@@ -54,7 +54,11 @@ class Encoder
 	floatUnion tempSpeed;
 
 	floatUnion speed;
+#ifdef RAD_SPEED
+	int32Union distance;
+#else
 	floatUnion distance;
+#endif
 	uint8_t numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	status encoderState = idle_stat;
 	uint8_t controlSumOfZSensor = 0;
