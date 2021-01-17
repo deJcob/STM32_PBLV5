@@ -19,7 +19,7 @@ Encoder::~Encoder()
 void Encoder::initialize(TIM_HandleTypeDef *htim)
 {
 	this->htim = htim;
-	htim->Instance->CNT = PULSE_QUANTITY*2; // Ustawiam wartość na środku licznika timera, ten ma wielkość 4*PULSE_QUANTITY
+	htim->Instance->CNT = PULSE_QUANTITY * 2; // Ustawiam wartość na środku licznika timera, ten ma wielkość 4*PULSE_QUANTITY
 }
 
 bool Encoder::checkIfMoveMade()
@@ -28,12 +28,12 @@ bool Encoder::checkIfMoveMade()
 
 	diff = (int16_t)presentTimRegisterValue - (int16_t)lastTimRegisterValue;
 
-	if (presentTimRegisterValue > 3*PULSE_QUANTITY) // Przepełnienie w górę
+	if (presentTimRegisterValue > 3 * PULSE_QUANTITY) // Przepełnienie w górę
 	{
 		htim->Instance->CNT = htim->Instance->CNT - PULSE_QUANTITY;
 		presentTimRegisterValue = presentTimRegisterValue - PULSE_QUANTITY;
 	}
-	else if (presentTimRegisterValue < 1*PULSE_QUANTITY) // Przepełnienie w dół
+	else if (presentTimRegisterValue < 1 * PULSE_QUANTITY) // Przepełnienie w dół
 	{
 		htim->Instance->CNT = htim->Instance->CNT + PULSE_QUANTITY;
 		presentTimRegisterValue = presentTimRegisterValue + PULSE_QUANTITY;
@@ -43,7 +43,8 @@ bool Encoder::checkIfMoveMade()
 
 	presentTimeStamp = HAL_GetTick();
 	elapsedTime = presentTimeStamp - lastTimeStamp;
-	lastTimeStamp += elapsedTime;
+	lastTimeStamp = presentTimeStamp;
+
 
 	if (diff != 0)
 	{
@@ -69,8 +70,8 @@ bool Encoder::checkIfOverflow()
 
 void Encoder::calcSpeed()
 {
-
 #ifdef SPEED_IN_RADIANS
+
 	tempSpeed.floatVal = ((diff * ANGLE_PER_PULSE_RAD) / ((elapsedTime) / 1000.0)); // RAD/s
 
 	speedBuffer.put(tempSpeed);
@@ -79,11 +80,13 @@ void Encoder::calcSpeed()
 
 	for (uint8_t i = 0; i < speedBuffer.size(); i++)
 	{
-		tempSpeed.floatVal += sgolayArr[i] * speedBuffer.getOfIndex(i).floatVal;
+		tempSpeed.floatVal +=  speedBuffer.getOfIndex(i).floatVal;
 	}
 
-	speed.floatVal = tempSpeed.floatVal; // / speedBuffer.size();
-	distance.int32Val = elapsedTime; //distance.int32Val + diff;
+	speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
+
+	distance.int32Val = distance.int32Val + diff;
+
 #else
 	tempSpeed.floatVal = ((abs(diff) * EXTERN_WHEEL_RATIO) / 10.0) / ((elapsedTime) / 1000.0);
 
@@ -145,10 +148,9 @@ void Encoder::encoderIteration()
 			speed.floatVal = 0.0;
 			encoderState = idle_stat;
 			numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
-			lastTimeStamp = HAL_GetTick();
+			//lastTimeStamp = HAL_GetTick();
 			//speedBuffer.reset();
 			//speedBuffer.put(tempSpeed);
-
 		}
 	}
 }
