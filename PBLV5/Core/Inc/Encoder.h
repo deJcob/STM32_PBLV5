@@ -44,6 +44,13 @@ class Encoder
 		backRun
 	};
 
+	enum filterType
+	{
+		none,
+		movingMean,
+		savitzkyGolay,
+	};
+
 	TIM_HandleTypeDef *htim;
 
 	uint16_t presentTimRegisterValue = 0;
@@ -90,6 +97,7 @@ class Encoder
 #endif
 	uint8_t numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	status encoderState = idle_stat;
+	filterType filter = movingMean;
 	uint8_t controlSumOfZSensor = 0;
 	bool thisIsFirstTimeHere = true;
 

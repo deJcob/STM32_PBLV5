@@ -76,14 +76,31 @@ void Encoder::calcSpeed()
 
 	speedBuffer.put(tempSpeed);
 
-	tempSpeed.floatVal = 0.0;
-
-	for (uint8_t i = 0; i < speedBuffer.size(); i++)
+	if (filter == movingMean)
 	{
-		tempSpeed.floatVal +=  speedBuffer.getOfIndex(i).floatVal;
-	}
+		tempSpeed.floatVal = 0.0;
 
-	speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
+		for (uint8_t i = 0; i < speedBuffer.size(); i++)
+		{
+			tempSpeed.floatVal +=  speedBuffer.getOfIndex(i).floatVal;
+		}
+		speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
+	}
+	else if (filter == savitzkyGolay)
+	{
+		tempSpeed.floatVal = 0.0;
+
+		for (uint8_t i = 0; i < speedBuffer.size(); i++)
+		{
+			tempSpeed.floatVal += sgolayArr[i] * speedBuffer.getOfIndex(i).floatVal;
+		}
+
+		speed.floatVal = tempSpeed.floatVal;
+	}
+	else
+	{
+		speed.floatVal = tempSpeed.floatVal;
+	}
 
 	distance.int32Val = distance.int32Val + diff;
 
@@ -129,7 +146,6 @@ void Encoder::encoderIteration()
 			}
 		}
 
-		calcSpeed();
 		numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	}
 	else
@@ -153,6 +169,8 @@ void Encoder::encoderIteration()
 			//speedBuffer.put(tempSpeed);
 		}
 	}
+
+	calcSpeed();
 }
 
 int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition()
