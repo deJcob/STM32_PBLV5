@@ -101,7 +101,7 @@ DMA_HandleTypeDef hdma_usart6_rx;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-EncoderSystem encoderSystem(&htim3, &htim8);
+EncoderSystem encoderSystem(&htim3, &htim8, ENCODER1_Z_Pin, ENCODER2_Z_Pin);
 DrivingSystem drivingSystem(&htim1, TIM_CHANNEL_4, &htim1, TIM_CHANNEL_3);
 IMUSensor imuSensors(IMU_NUM_OF_ELEM);
 DataManagement dataManagement;
@@ -361,29 +361,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == ENCODER1_Z_Pin)
-	{
-		/*if (encoderSystem.diffBetweenPreviousZ(0) != 0)
-		{
-			// set error state
-			//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
-			diffZOneTimerValue = abs(diffZOne);
-		} */
-
-	}
-	if (GPIO_Pin == ENCODER2_Z_Pin)
-	{
-		/*
-		if(encoderSystem.diffBetweenPreviousZ(1) != 0)
-		{
-			// set error state
-			//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
-			diffZTwoTimerValue = abs(diffZTwo);
-		};
-		*/
-	}
+	encoderSystem.checkError(&GPIO_Pin);
 }
 
 
@@ -479,7 +457,6 @@ int main(void)
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
     HAL_TIM_Base_Start_IT(&htim11);
 
-    uint32_t test = uwTickFreq;
   /* USER CODE END 2 */
 
   /* Infinite loop */

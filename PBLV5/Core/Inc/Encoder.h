@@ -13,11 +13,12 @@
 #include <algorithm>
 #include "DataBuffer.h"
 #include "unions.h"
+#include <math.h>
 
 #define LEFT_ENCODER 0
 #define RIGHT_ENCODER 1
 
-
+#define TIMER_ARR 1024
 #define PULSE_QUANTITY 256
 #define ANGLE_PER_PULSE_RAD (float)0.024543692606170
 #define MAX_BUFFER_SIZE 15 // Musi byc nieparzysty
@@ -59,6 +60,10 @@ class Encoder
 	uint32_t presentTimeStamp = 0;
 	uint32_t lastTimeStamp = 0;
 	uint32_t elapsedTime = 0;
+	uint16_t interruptZpin = 0;
+	uint16_t controlSumOfZSensor = 0;
+
+	const uint8_t timArrMultiplicity = TIMER_ARR/PULSE_QUANTITY;
 
 	const float sgolayArr[MAX_BUFFER_SIZE] =
 	/* buff 15, order 4 */ {0.0464396284829724, -0.0619195046439631,
@@ -98,20 +103,23 @@ class Encoder
 	uint8_t numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	status encoderState = idle_stat;
 	filterType filter = movingMean;
-	uint8_t controlSumOfZSensor = 0;
-	bool thisIsFirstTimeHere = true;
+
+	bool signalZinitialized = false;
 
 	bool checkIfMoveMade();
 	bool checkIfOverflow();
 	void calcSpeed();
+	uint16_t getAbsoluteZsensorValue();
 
 public:
 	Encoder();
 	virtual ~Encoder();
 
 	void initialize(TIM_HandleTypeDef *htim);
+	void initialize(TIM_HandleTypeDef *htim, uint16_t InterruptZSignal);
 	void encoderIteration();
-	int16_t returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition();
+	bool zInterruptHandler(uint16_t *GPIO_Pin);
+	int16_t checkEncoderErrorSize();
 
 	uint8_t getDataInArray(uint8_t *dataBuffer);
 };

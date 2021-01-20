@@ -11,6 +11,7 @@ Encoder::Encoder() : speedBuffer(MAX_BUFFER_SIZE)
 {
 }
 
+
 Encoder::~Encoder()
 {
 	// TODO Auto-generated destructor stub
@@ -21,6 +22,14 @@ void Encoder::initialize(TIM_HandleTypeDef *htim)
 	this->htim = htim;
 	htim->Instance->CNT = PULSE_QUANTITY * 2; // Ustawiam wartość na środku licznika timera, ten ma wielkość 4*PULSE_QUANTITY
 }
+
+void Encoder::initialize(TIM_HandleTypeDef *htim, uint16_t InterruptZSignal)
+{
+	initialize(htim);
+	interruptZpin = InterruptZSignal;
+
+}
+
 
 bool Encoder::checkIfMoveMade()
 {
@@ -173,14 +182,32 @@ void Encoder::encoderIteration()
 	calcSpeed();
 }
 
-int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition()
+uint16_t Encoder::getAbsoluteZsensorValue()
+{								// floorf korzysta z FPU w przeciwienstwie do floor() - to jest na double
+	return controlSumOfZSensor + floorf(htim->Instance->CNT/timArrMultiplicity)*PULSE_QUANTITY;
+}
+
+bool Encoder::zInterruptHandler(uint16_t *GPIO_Pin)
 {
-	if (this->thisIsFirstTimeHere)
+	if (*GPIO_Pin == interruptZpin)
 	{
-		this->thisIsFirstTimeHere = false;
-		this->controlSumOfZSensor = (uint8_t)htim->Instance->CNT;
+		if (abs(checkEncoderErrorSize() > 1))
+		{
+			htim->Instance->CNT = getAbsoluteZsensorValue();
+		}
+		return true;
 	}
-	return ((int16_t)controlSumOfZSensor - (int16_t)htim->Instance->CNT);
+	return false;
+}
+
+int16_t Encoder::checkEncoderErrorSize()
+{
+	if (!signalZinitialized)
+	{
+		signalZinitialized = true;
+		controlSumOfZSensor = (uint16_t)htim->Instance->CNT % timArrMultiplicity;
+	}
+	return ((int16_t)getAbsoluteZsensorValue() - (int16_t)htim->Instance->CNT);
 }
 
 uint8_t Encoder::getDataInArray(uint8_t *dataBuffer)
