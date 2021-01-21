@@ -361,7 +361,7 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	encoderSystem.checkError(&GPIO_Pin);
+	//encoderSystem.checkError(&GPIO_Pin);
 }
 
 

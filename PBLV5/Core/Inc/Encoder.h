@@ -121,6 +121,7 @@ public:
 	bool zInterruptHandler(uint16_t *GPIO_Pin);
 	int16_t checkEncoderErrorSize();
 
+
 	uint8_t getDataInArray(uint8_t *dataBuffer);
 };
 

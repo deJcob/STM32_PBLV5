@@ -191,7 +191,7 @@ bool Encoder::zInterruptHandler(uint16_t *GPIO_Pin)
 {
 	if (*GPIO_Pin == interruptZpin)
 	{
-		if (abs(checkEncoderErrorSize() > 1))
+		if (abs(checkEncoderErrorSize() > 3))
 		{
 			htim->Instance->CNT = getAbsoluteZsensorValue();
 		}
