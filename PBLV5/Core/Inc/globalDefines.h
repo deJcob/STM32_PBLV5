@@ -16,6 +16,7 @@
 #define ID_ENCODER 0x07
 #define ID_GPS 0x08
 #define ID_MINI_LIDAR 0x09
+#define ID_RULER 0x12
 #define ID_TIME_SYNC 0xFF
 #define ID_CAN_DIST 0x0B
 #define ID_CAN_SPEED 0x0C
@@ -51,5 +52,6 @@
 #define SIZE_GET_PACKETS_INFO 8
 
 #define IMU_NUM_OF_ELEM 250
+#define RULER_SENSORS_COUNT 1
 
 #endif /* GLOBALDEFINES_H_ */

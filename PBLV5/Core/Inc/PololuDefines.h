@@ -1,0 +1,39 @@
+#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST 0x0029
+#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_SECOND 0x002A
+#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_THIRD 0x002B
+#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FOURTH 0x002C
+
+#define POLOLU_REGISTER_ADDRESS_SIZE 2
+#define POLOLU_READ_ADDRESS 0x0053
+#define POLOLU_WRITE_ADDRESS 0x0052
+#define POLOLU_RESULT_RANGE_STATUS_ADDRESS 0x004D // ostatni bit informuje czy device jest ready czy nie
+#define POLOLU_SYSRANGE_START_ADDRESS 0x0018 // przedostatni bit -> info o trybie dzialania 0 single, 1 continous
+											// ostatni bit jak sie ustawi na 1 -> zaczyna pomiar w zaleznosci od trybu
+#define POLOLU_SYSRANGE_START_CONTINOUS_MODE_START_VALUE 0x03// przedostatni bit -> info o trybie dzialania 0 single, 1 continous
+#define POLOLU_SYSRANGE_START_RESET_VALUE 0x01// przedostatni bit -> info o trybie dzialania 0 single, 1 continous
+
+#define POLOLU_SYSRANGE__INTERMEASUREMENT_PERIOD_ADDRESS 0x001B
+
+#define POLOLU_HISTORICAL_DATA_ADDRESS 0x0052
+#define POLOLU_SYSTEM_HISTORY_CONTROL_ADDRESS 0x0012
+
+#define POLOLU_RESULT_ALS_ADDRESS 0x0050
+
+#define SYSRANGE_MAX_CONVERGENCE_TIME 0x01C
+#define READOUT__AVERAGING_SAMPLE_PERIOD 0x10A
+
+#define RESULT__INTERRUPT_STATUS_GPIO 0x04f
+
+#define RESULT__RANGE_VAL 0x062
+#define SYSTEM__INTERRUPT_CLEAR 0x015
+
+#define POLOLU_DATA 0x28
+#define POLOLU_DATA_SIZE 6
+
+
+typedef enum
+{
+  DEVICE_READY = 0x00U,
+  DEVICE_NOT_READY= 0x01U,
+  DEVICE_READ_ERROR= 0x02U
+} POLOLU_DEVICE_STATUS;

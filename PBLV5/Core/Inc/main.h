@@ -63,6 +63,10 @@ void Error_Handler(void);
 #define USER_Btn_Pin GPIO_PIN_13
 #define USER_Btn_GPIO_Port GPIOC
 #define USER_Btn_EXTI_IRQn EXTI15_10_IRQn
+#define I2C_RULLER_SDA_Pin GPIO_PIN_0
+#define I2C_RULLER_SDA_GPIO_Port GPIOF
+#define I2C_RULLER_SCL_Pin GPIO_PIN_1
+#define I2C_RULLER_SCL_GPIO_Port GPIOF
 #define BRIDGE_B1_Pin GPIO_PIN_3
 #define BRIDGE_B1_GPIO_Port GPIOF
 #define BRIDGE_A2_Pin GPIO_PIN_5

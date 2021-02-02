@@ -27,6 +27,7 @@
 #include "EncoderSystem.h"
 #include "DrivingSystem.h"
 #include "IMUSensor.h"
+#include "RulerSensor.h"
 #include "DataPtrVolumePair.h"
 #include "DataManagement.h"
 #include "tcp_server.h"
@@ -41,6 +42,12 @@
 #include "Electromagnet.h"
 #include "TimeMeasurementSystem.h"
 #include "UltrasoundManager.h"
+#include "vl6180x_api.h"
+#include "vl6180x_cfg.h"
+#include "vl6180x_def.h"
+#include "vl6180x_i2c.h"
+#include "vl6180x_platform.h"
+#include "vl6180x_types.h"
 
 extern "C" void UART_GPS_RX_PROCESSING(void);
 extern "C" void UART_LIDAR_RX_PROCESSING(void);
@@ -74,6 +81,7 @@ DMA_HandleTypeDef hdma_adc1;
 CAN_HandleTypeDef hcan1;
 
 I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 
 SPI_HandleTypeDef hspi2;
 
@@ -104,6 +112,7 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 EncoderSystem encoderSystem(&htim3, &htim8);
 DrivingSystem drivingSystem(&htim1, TIM_CHANNEL_4, &htim1, TIM_CHANNEL_3);
 IMUSensor imuSensors(IMU_NUM_OF_ELEM);
+RulerSensor rulerSensors(RULER_SENSORS_COUNT);
 DataManagement dataManagement;
 TimerConfigurator timerConfig(&htim6, &htim9, &htim7);
 GPSManager gpsManager(&hdma_usart2_rx);
@@ -129,6 +138,8 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 	{ID_ACC, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_ACC, std::bind(&IMUSensor::getAccData, &imuSensors, std::placeholders::_1)}},
 	{ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
 	{ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
+	//todo: add data pointer to send rulerData
+	//{ID_RULER, DataPtrVolumePair{1, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
 	{ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
 	{ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
 	{ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},
@@ -167,6 +178,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -193,6 +205,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		timMeasureSystem.takeTS(0);
 		imuSensors.pullDataFromSensorsI2C(&hi2c1);
+		rulerSensors.pullDataFromSensorsI2C(&hi2c2);
 		timMeasureSystem.calculateElapsedTime(0);
 	}
 	if (htim->Instance == TIM9)
@@ -437,11 +450,11 @@ int main(void)
   MX_USART6_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
   MX_ADC1_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
-
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcMeasurement, 2);
-  //HAL_ADC_Start(&hadc1);
+//  HAL_ADC_Start(&hadc1);
 
   canLidar.configureCAN();
 
@@ -451,8 +464,9 @@ int main(void)
     HAL_UART_Receive_DMA(&huart5, ultrasoundManager.getDataBuffer(), ultrasoundManager.getBufferLength());
 
     HAL_I2C_Init(&hi2c1);
+    HAL_I2C_Init(&hi2c2);
     imuSensors.initializeI2C_Sensors(&hi2c1);
-
+    rulerSensors.initializeI2C_Sensors(&hi2c2);
 
     drivingSystem.initialize();
 
@@ -476,7 +490,6 @@ int main(void)
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
     HAL_TIM_Base_Start_IT(&htim11);
-
 
   /* USER CODE END 2 */
 
@@ -543,12 +556,14 @@ void SystemClock_Config(void)
   }
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART6
                               |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_UART5
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_CLK48;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C2
+                              |RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart4ClockSelection = RCC_UART4CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInitStruct.I2c2ClockSelection = RCC_I2C2CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Clk48ClockSelection = RCC_CLK48SOURCE_PLL;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
@@ -694,6 +709,52 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x20404768;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
 
 }
 
