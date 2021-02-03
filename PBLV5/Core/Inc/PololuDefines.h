@@ -34,6 +34,9 @@
 #define POLOLU_DATA 0x28
 #define POLOLU_DATA_SIZE 6
 
+#define POLOLU_NEW_SAMPLE_READY_VALUE 4
+#define RULER_SENSOR_OBJECTDATAVOLUME 8
+
 
 typedef enum
 {

@@ -1,17 +1,15 @@
 #include "RulerSensor.h"
 #define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST 0x0029
-#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_SECOND 0x002A
-#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_THIRD 0x002B
-#define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FOURTH 0x002C
 
 RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 
 	#ifdef POLOLU
 	SENSORS_COUNT = 1;
 
-	for(uint8_t i = 0; i < SENSORS_COUNT; i++){
-		rulerSensorsWriteAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
-		rulerSensorsReadAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
+	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
+	{
+		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
+		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 	}
 
 #else
@@ -29,16 +27,11 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 {
 	i2cHandle = hi2c;
 	//initialize internal addresses values
-	for(uint8_t i = 0; i < SENSORS_COUNT; i++){
+	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
+	{
 		configurePololu(hi2c, i);
 	}
 
-}
-
-void RulerSensor::addToBuffer(DataBuffer<IMUData> &buffer, uint32_t timeStamp, uint8_t size)
-{
-//	IMUData measurement(rawData, timeStamp, size);
-//	buffer.put(measurement);
 }
 
 void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
@@ -46,18 +39,18 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 //	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 //	{
 
-		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, rulerSensorsReadAddresses[i]))
+		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
 		{
-			errorCode[i] = readData[i];
+			errorCode[i] = readData[i] & 0xF0;
 		}
 
-	if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, rulerSensorsReadAddresses[i]))
+	if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, readAddresses[i]))
 	{
 		temporaryByte = readData[0];
-		temporaryByte = temporaryByte & 0b00000111;
-			if (temporaryByte == 4){//It means -> New Sample Ready threshold event
+		temporaryByte &= 0b00000111;
+			if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE){//It means -> New Sample Ready threshold event
 			//czytanie wartosci dopiero jak jest 4 na powyzszym
-			if(readBytePololu(hi2c, RESULT__RANGE_VAL, readData, rulerSensorsReadAddresses[i])){
+			if(readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i])){
 				//jak dostane to czyszcenie
 				rawData[i] = readData[0];
 				writeData[0] = 0x07;
@@ -69,7 +62,7 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 				 */
 
 				//clear interrupt status
-				writeBytePololu(hi2c, SYSTEM__INTERRUPT_CLEAR, writeData, rulerSensorsWriteAddresses[i]);
+				writeBytePololu(hi2c, SYSTEM__INTERRUPT_CLEAR, writeData, writeAddresses[i]);
 
 			}
 		}
@@ -119,127 +112,130 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint8_t i)
 {
 	//	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 	//	{
-		//APP NOTE
+		//APP NOTE - private registers initialization
 		writeData[0] = 0x01;
-		writeBytePololu(hi2c, 0x0207, writeData, rulerSensorsWriteAddresses[i]);
-		writeBytePololu(hi2c, 0x0208, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0207, writeData, writeAddresses[i]);
+		writeBytePololu(hi2c, 0x0208, writeData, writeAddresses[i]);
 		writeData[0] = 0x00;
-		writeBytePololu(hi2c, 0x0096, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0096, writeData, writeAddresses[i]);
 		writeData[0] = 0xfd;
-		writeBytePololu(hi2c, 0x0097, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0097, writeData, writeAddresses[i]);
 		writeData[0] = 0x01;
-		writeBytePololu(hi2c, 0x00e3, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00e3, writeData, writeAddresses[i]);
 		writeData[0] = 0x03;
-		writeBytePololu(hi2c, 0x00e4, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00e4, writeData, writeAddresses[i]);
 		writeData[0] = 0x02;
-		writeBytePololu(hi2c, 0x00e5, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00e5, writeData, writeAddresses[i]);
 		writeData[0] = 0x01;
-		writeBytePololu(hi2c, 0x00e6, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00e6, writeData, writeAddresses[i]);
 		writeData[0] = 0x03;
-		writeBytePololu(hi2c, 0x00e7, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00e7, writeData, writeAddresses[i]);
 		writeData[0] = 0x02;
-		writeBytePololu(hi2c, 0x00f5, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00f5, writeData, writeAddresses[i]);
 		writeData[0] = 0x05;
-		writeBytePololu(hi2c, 0x00d9, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00d9, writeData, writeAddresses[i]);
 		writeData[0] = 0xce;
-		writeBytePololu(hi2c, 0x00db, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00db, writeData, writeAddresses[i]);
 		writeData[0] = 0x03;
-		writeBytePololu(hi2c, 0x00dc, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00dc, writeData, writeAddresses[i]);
 		writeData[0] = 0xf8;
-		writeBytePololu(hi2c, 0x00dd, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00dd, writeData, writeAddresses[i]);
 		writeData[0] = 0x00;
-		writeBytePololu(hi2c, 0x009f, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x009f, writeData, writeAddresses[i]);
 		writeData[0] = 0x3c;
-		writeBytePololu(hi2c, 0x00a3, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00a3, writeData, writeAddresses[i]);
 		writeData[0] = 0x00;
-		writeBytePololu(hi2c, 0x00b7, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00b7, writeData, writeAddresses[i]);
 		writeData[0] = 0x03c;
-		writeBytePololu(hi2c, 0x00bb, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00bb, writeData, writeAddresses[i]);
 		writeData[0] = 0x09;
-		writeBytePololu(hi2c, 0x00b2, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00b2, writeData, writeAddresses[i]);
 		writeData[0] = 0x09;
-		writeBytePololu(hi2c, 0x00ca, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00ca, writeData, writeAddresses[i]);
 		writeData[0] = 0x01;
-		writeBytePololu(hi2c, 0x0198, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0198, writeData, writeAddresses[i]);
 		writeData[0] = 0x017;
-		writeBytePololu(hi2c, 0x01b0, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01b0, writeData, writeAddresses[i]);
 		writeData[0] = 0x00;
-		writeBytePololu(hi2c, 0x01ad, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01ad, writeData, writeAddresses[i]);
 		writeData[0] = 0x05;
-		writeBytePololu(hi2c, 0x00ff, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x00ff, writeData, writeAddresses[i]);
 		writeData[0] = 0x05;
-		writeBytePololu(hi2c, 0x0100, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0100, writeData, writeAddresses[i]);
 		writeData[0] = 0x05;
-		writeBytePololu(hi2c, 0x0199, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x0199, writeData, writeAddresses[i]);
 		writeData[0] = 0x1b;
-		writeBytePololu(hi2c, 0x01a6, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01a6, writeData, writeAddresses[i]);
 		writeData[0] = 0x3e;
-		writeBytePololu(hi2c, 0x01ac, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01ac, writeData, writeAddresses[i]);
 		writeData[0] = 0x1f;
-		writeBytePololu(hi2c, 0x01a7, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01a7, writeData, writeAddresses[i]);
 		writeData[0] = 0x00;
-		writeBytePololu(hi2c, 0x0030, writeData, rulerSensorsWriteAddresses[i]);
-		//private registers
+		writeBytePololu(hi2c, 0x0030, writeData, writeAddresses[i]);
 
 		//public registers
 		writeData[0] = SYSTEM__MODE_GPIO0_VALUE;
-		writeBytePololu(hi2c, SYSTEM__MODE_GPIO0_ADDRESS, writeData, rulerSensorsWriteAddresses[i]);
-			//1000: GPIO Interrupt output
+		//1000: GPIO Interrupt output
+		writeBytePololu(hi2c, SYSTEM__MODE_GPIO0_ADDRESS, writeData, writeAddresses[i]);
 
+		// Set the averaging sample period
+		// (compromise between lower noise and
+		// increased execution time)
 		writeData[0] = READOUT__AVERAGING_SAMPLE_PERIOD_VALUE;
-		writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, rulerSensorsWriteAddresses[i]);
-			// Set the averaging sample period
-			// (compromise between lower noise and
-			// increased execution time)
+		writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, writeAddresses[i]);
 
-		writeData[0] = 0x46;
-		writeBytePololu(hi2c, 0x03f, writeData, rulerSensorsWriteAddresses[i]);
 		// Sets the light and dark gain (upper
 		// nibble). Dark gain should not be
 		// changed.
+		writeData[0] = 0x46;
+		writeBytePololu(hi2c, 0x03f, writeData, writeAddresses[i]);
 
-		writeData[0] = 0xff;
-		writeBytePololu(hi2c, 0x031, writeData, rulerSensorsWriteAddresses[i]);
 		// sets the # of range measurements after
 		// which auto calibration of system is
 		// performed
-		writeData[0] = 0x63;
-		writeBytePololu(hi2c, 0x041, writeData, rulerSensorsWriteAddresses[i]);
+		writeData[0] = 0xff;
+		writeBytePololu(hi2c, 0x031, writeData, writeAddresses[i]);
+
 		// Set ALS integration time to 100ms
-		writeData[0] = 0x01;
-		writeBytePololu(hi2c, 0x02e, writeData, rulerSensorsWriteAddresses[i]);
+		writeData[0] = 0x63;
+		writeBytePololu(hi2c, 0x041, writeData, writeAddresses[i]);
+
 		// of the ranging sensor
 		//Optional: Public registers - See data sheet for more detail
+		writeData[0] = 0x01;
+		writeBytePololu(hi2c, 0x02e, writeData, writeAddresses[i]);
+
 		writeData[0] = 0x09;
-		writeBytePololu(hi2c, 0x01b, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x01b, writeData, writeAddresses[i]);
+
 		// period to 100ms
 		writeData[0] = 0x31;
-		writeBytePololu(hi2c, 0x03e, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x03e, writeData, writeAddresses[i]);
 		writeData[0] = 0x24;
-		writeBytePololu(hi2c, 0x014, writeData, rulerSensorsWriteAddresses[i]);
+		writeBytePololu(hi2c, 0x014, writeData, writeAddresses[i]);
 
-			if(readBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, readData, rulerSensorsReadAddresses[i]))
+			if(readBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, readData, readAddresses[i]))
 				{
 				temporaryByte = readData[0] | POLOLU_SYSRANGE_START_CONTINOUS_MODE_START_VALUE;
 				writeData[0] = temporaryByte;
-				writeBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, writeData, rulerSensorsWriteAddresses[i]);
+				writeBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, writeData, writeAddresses[i]);
 				}
 
 			//get Maximum time to run measurement in Ranging modes
-			if(readBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, readData, rulerSensorsReadAddresses[i]))
+			if(readBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, readData, readAddresses[i]))
 			{
 				temporaryByte = readData[0] & 0b00111111;
 				writeData[0] = temporaryByte | 0x31;
-				writeBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, writeData, rulerSensorsWriteAddresses[i]);
+				writeBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, writeData, writeAddresses[i]);
 			}
 
 			//The internal readout averaging sample period can be adjusted from 0 to 255.
 			writeData[0] = 0x30;
-			writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, rulerSensorsWriteAddresses[i]);
+			writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, writeAddresses[i]);
 
 			//system fresh out reset
 			writeData[0] = 0x00;
-			writeBytePololu(hi2c, 0x016, writeData, rulerSensorsWriteAddresses[i]);
+			writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
 			//	}
 
 }
@@ -269,39 +265,22 @@ bool RulerSensor::readBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddre
 		}
  }
 
-
-uint16_t RulerSensor::getBufferDataInArray(DataBuffer<IMUData> &buffer, uint8_t *dataBuffer)
-{
-	readingInProgress = 1;
-	uint8_t numberOfElements = buffer.size();
-	if(!numberOfElements)
-	{
-		readingInProgress = 0;
-		return 0;
-	}
-	IMUData tempData = buffer.get();
-	uint8_t ptrToArrayData[10];
-	uint8_t numberOfBytesToCopy = tempData.getDataInArray(ptrToArrayData);
-	std::unique_ptr<uint8_t[]> tempBuffer = std::make_unique<uint8_t[]>(numberOfElements * numberOfBytesToCopy);
-
-	std::copy_n(ptrToArrayData, numberOfBytesToCopy, tempBuffer.get());
-
-	for (uint16_t i = 1; i < numberOfElements; i++)
-	{
-		tempData = buffer.get();
-		numberOfBytesToCopy = tempData.getDataInArray(ptrToArrayData);
-		std::copy_n(ptrToArrayData, numberOfBytesToCopy, tempBuffer.get() + i * numberOfBytesToCopy);
-	}
-
-	std::move(tempBuffer.get(), tempBuffer.get() + numberOfElements * numberOfBytesToCopy, dataBuffer);
-
-	readingInProgress = 0;
-	return numberOfElements * numberOfBytesToCopy;
-}
-
 uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
 {
-	return getBufferDataInArray(pololuBuffer, dataBuffer);
+	uint8_t dataToReturn[RULER_SENSOR_OBJECTDATAVOLUME];
+
+	dataToReturn[0] = rawData[0];
+	dataToReturn[1] = errorCode[0];
+	dataToReturn[2] = rawData[1];
+	dataToReturn[3] = errorCode[1];
+	dataToReturn[4] = rawData[2];
+	dataToReturn[5] = errorCode[2];
+	dataToReturn[6] = 0xbb;
+	dataToReturn[7] = 0xcc;
+
+	std::copy_n(dataToReturn, RULER_SENSOR_OBJECTDATAVOLUME, dataBuffer);
+
+	return RULER_SENSOR_OBJECTDATAVOLUME;
 }
 
 POLOLU_DEVICE_STATUS RulerSensor::getDeviceStatus(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr)
@@ -331,10 +310,3 @@ uint16_t RulerSensor::convertSevenBitAddressToWriteAddress(uint16_t sevenBitAddr
 uint16_t RulerSensor::convertSevenBitAddressToReadAddress(uint16_t sevenBitAddress){
 	return (convertSevenBitAddressToWriteAddress(sevenBitAddress) | 0x1);
 }
-
-
-
-
-
-
-

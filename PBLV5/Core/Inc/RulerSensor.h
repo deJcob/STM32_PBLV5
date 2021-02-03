@@ -18,12 +18,12 @@ class RulerSensor {
 
 	uint8_t SENSORS_COUNT = 1;
  	uint8_t rulerSensorsData[8];
- 	uint16_t rulerSensorsWriteAddresses[8];
- 	uint16_t rulerSensorsReadAddresses[8];
+ 	uint16_t writeAddresses[8];
+ 	uint16_t readAddresses[8];
 
-	uint8_t rawData[16];
-	uint8_t readData[16];
-	uint8_t writeData[16];
+	uint8_t rawData[8];
+	uint8_t readData[8];
+	uint8_t writeData[8];
 	volatile uint8_t errorCode[8];
 	uint8_t temporaryByte = 0;
 	bool readingInProgress = 0;
@@ -31,14 +31,11 @@ class RulerSensor {
 
 	void pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i);
 
-	void addToBuffer(DataBuffer<IMUData> &buffer, uint32_t timeStamp, uint8_t size);
-
 	void writeI2C(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr , uint16_t *sensorRegAddr, uint8_t *regValue);
 
 	void configureSensors(I2C_HandleTypeDef *hi2c);
 	void configurePololu(I2C_HandleTypeDef *hi2c, uint8_t sensorIndex);
 
-	uint16_t getBufferDataInArray(DataBuffer<IMUData> &buffer, uint8_t *dataBuffer);
 	POLOLU_DEVICE_STATUS getDeviceStatus(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr);
 	void startMeasurement(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr, uint8_t *regValue);
 	void writeBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorWriteAddress);
