@@ -18,28 +18,32 @@ class RulerSensor {
 
 	uint8_t SENSORS_COUNT = 1;
  	uint8_t rulerSensorsData[8];
- 	uint16_t pololuSevenBitAddresses[8];
  	uint16_t rulerSensorsWriteAddresses[8];
  	uint16_t rulerSensorsReadAddresses[8];
 
 	uint8_t rawData[16];
+	uint8_t readData[16];
+	uint8_t writeData[16];
+	volatile uint8_t errorCode[8];
+	uint8_t temporaryByte = 0;
 	bool readingInProgress = 0;
 	uint32_t dataTimeStamp = 0;
 
-	void pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t accDeviceAddr, uint16_t registerAddr, uint8_t size);
+	void pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i);
 
 	void addToBuffer(DataBuffer<IMUData> &buffer, uint32_t timeStamp, uint8_t size);
 
-	void writeSPI(SPI_HandleTypeDef *hspi, uint8_t *sensorRegAddr, uint8_t *regValue);
 	void writeI2C(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr , uint16_t *sensorRegAddr, uint8_t *regValue);
 
-	void configurePololu(I2C_HandleTypeDef *hi2c, uint16_t accRegAddr, uint8_t regValue);
+	void configureSensors(I2C_HandleTypeDef *hi2c);
+	void configurePololu(I2C_HandleTypeDef *hi2c, uint8_t sensorIndex);
 
 	uint16_t getBufferDataInArray(DataBuffer<IMUData> &buffer, uint8_t *dataBuffer);
 	POLOLU_DEVICE_STATUS getDeviceStatus(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr);
 	void startMeasurement(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr, uint8_t *regValue);
-	void writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value);
-	void writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value, uint8_t size);
+	void writeBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorWriteAddress);
+	void writePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint8_t size, uint16_t sensorWriteAddress);
+	bool readBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorReadAddress);
 	uint16_t convertSevenBitAddressToWriteAddress(uint16_t sevenBitAddress);
 	uint16_t convertSevenBitAddressToReadAddress(uint16_t sevenBitAddress);
 
@@ -48,10 +52,8 @@ public:
 	virtual ~RulerSensor();
 
 	void initializeI2C_Sensors(I2C_HandleTypeDef *hi2c);
-	void initializeSPI_Sensors(SPI_HandleTypeDef *hspi);
 
 	void pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c);
-	void pullDataFromSensorsSPI(SPI_HandleTypeDef *hspi);
 
 	uint16_t getPololuData(uint8_t *dataBuffer);
 };
