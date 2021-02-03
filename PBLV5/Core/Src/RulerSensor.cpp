@@ -56,8 +56,13 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t accDeviceAddr,
 		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, POLOLU_RESULT_RANGE_STATUS_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
 			{
 				dataTimeStamp = HAL_GetTick();
-
 			}
+
+		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, 0x064, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
+			{
+				dataTimeStamp = HAL_GetTick();
+			}
+
 	if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, RESULT__INTERRUPT_STATUS_GPIO, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
 	{
 		uint8_t temp = rawData[0] & 0b00000111;
@@ -81,7 +86,6 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t accDeviceAddr,
 	}
 	//	}
 
-
 }
 
 void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
@@ -91,9 +95,6 @@ void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
 	#ifdef POLOLU
 
 		pullPololuData(hi2c, POLOLU_READ_ADDRESS, POLOLU_HISTORICAL_DATA_ADDRESS, 2);//tutaj adres odpowiedniego rejestru do pobierania danych
-//		pullPololuData(hi2c, POLOLU_READ_ADDRESS, POLOLU_HISTORICAL_DATA_ADDRESS, 16);//tutaj adres odpowiedniego rejestru do pobierania danych
-//		pullPololuData(hi2c, POLOLU_READ_ADDRESS, POLOLU_RESULT_ALS_ADDRESS, 2);
-//		pullPololuData(hi2c, POLOLU_READ_ADDRESS, POLOLU_SYSTEM_HISTORY_CONTROL_ADDRESS, 1);
 
 	#else
 		pullSparkfunData(hi2c, ACC_SENS_ADDR, ACC_DATA | ACC_MULTIBYTE_READ,	ACC_DATA_SIZE);
@@ -116,6 +117,111 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint16_t accRegAddr, 
 #ifdef POLOLU
 //	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 //	{
+	//APP NOTE
+	rawData[0] = 0x01;
+	writePololu(hi2c, 0x0207, rawData);
+	writePololu(hi2c, 0x0208, rawData);
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x0096, rawData);
+	rawData[0] = 0xfd;
+	writePololu(hi2c, 0x0097, rawData);
+	rawData[0] = 0x01;
+	writePololu(hi2c, 0x00e3, rawData);
+	rawData[0] = 0x03;
+	writePololu(hi2c, 0x00e4, rawData);
+	rawData[0] = 0x02;
+	writePololu(hi2c, 0x00e5, rawData);
+	rawData[0] = 0x01;
+	writePololu(hi2c, 0x00e6, rawData);
+	rawData[0] = 0x03;
+	writePololu(hi2c, 0x00e7, rawData);
+	rawData[0] = 0x02;
+	writePololu(hi2c, 0x00f5, rawData);
+	rawData[0] = 0x05;
+	writePololu(hi2c, 0x00d9, rawData);
+	rawData[0] = 0xce;
+	writePololu(hi2c, 0x00db, rawData);
+	rawData[0] = 0x03;
+	writePololu(hi2c, 0x00dc, rawData);
+	rawData[0] = 0xf8;
+	writePololu(hi2c, 0x00dd, rawData);
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x009f, rawData);
+	rawData[0] = 0x3c;
+	writePololu(hi2c, 0x00a3, rawData);
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x00b7, rawData);
+	rawData[0] = 0x03c;
+	writePololu(hi2c, 0x00bb, rawData);
+	rawData[0] = 0x09;
+	writePololu(hi2c, 0x00b2, rawData);
+	rawData[0] = 0x09;
+	writePololu(hi2c, 0x00ca, rawData);
+	rawData[0] = 0x01;
+	writePololu(hi2c, 0x0198, rawData);
+	rawData[0] = 0x017;
+	writePololu(hi2c, 0x01b0, rawData);
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x01ad, rawData);
+	rawData[0] = 0x05;
+	writePololu(hi2c, 0x00ff, rawData);
+	rawData[0] = 0x05;
+	writePololu(hi2c, 0x0100, rawData);
+	rawData[0] = 0x05;
+	writePololu(hi2c, 0x0199, rawData);
+	rawData[0] = 0x1b;
+	writePololu(hi2c, 0x01a6, rawData);
+	rawData[0] = 0x3e;
+	writePololu(hi2c, 0x01ac, rawData);
+	rawData[0] = 0x1f;
+	writePololu(hi2c, 0x01a7, rawData);
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x0030, rawData);
+	//private registers
+
+	//
+	rawData[0] = SYSTEM__MODE_GPIO0_VALUE;
+	writePololu(hi2c, SYSTEM__MODE_GPIO0_ADDRESS, rawData, 1);
+		//1000: GPIO Interrupt output
+
+	rawData[0] = READOUT__AVERAGING_SAMPLE_PERIOD_VALUE;
+	writePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, rawData, 1);
+		// Set the averaging sample period
+		// (compromise between lower noise and
+		// increased execution time)
+
+	rawData[0] = 0x46;
+	writePololu(hi2c, 0x03f, rawData, 1);
+	// Sets the light and dark gain (upper
+	// nibble). Dark gain should not be
+	// changed.
+
+	rawData[0] = 0xff;
+	writePololu(hi2c, 0x031, rawData, 1);
+	// sets the # of range measurements after
+	// which auto calibration of system is
+	// performed
+	rawData[0] = 0x63;
+	writePololu(hi2c, 0x041, rawData);
+	// Set ALS integration time to 100ms
+	rawData[0] = 0x01;
+	writePololu(hi2c, 0x02e, rawData);
+	// of the ranging sensor
+	//Optional: Public registers - See data sheet for more detail
+	rawData[0] = 0x09;
+	writePololu(hi2c, 0x01b, rawData);
+	// period to 100ms
+	rawData[0] = 0x31;
+	writePololu(hi2c, 0x03e, rawData);
+	rawData[0] = 0x24;
+	writePololu(hi2c, 0x014, rawData);
+	//system fresh out reset
+	rawData[0] = 0x00;
+	writePololu(hi2c, 0x016, rawData);
+
+
+
+
 		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, POLOLU_SYSRANGE_START_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
 			{
 	//		rawData[0] = rawData[0] | POLOLU_SYSRANGE_START_RESET_VALUE;
@@ -129,35 +235,16 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint16_t accRegAddr, 
 				}
 			}
 
-		//history buffer init
-		rawData[0] = 0x01;
-			if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, POLOLU_SYSTEM_HISTORY_CONTROL_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
-			{
-				rawData[12] = rawData[0];
-				rawData[0] = rawData[0]& 0b11111000;
-//				rawData[0] = rawData[0] | 0x05; //added clear buffer command to write
-				rawData[0] = rawData[0] | 0x00; //disable buffering
-
-				if(HAL_I2C_Mem_Write(hi2c, POLOLU_WRITE_ADDRESS, POLOLU_SYSTEM_HISTORY_CONTROL_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
-				{
-					rawData[0] = 0x12;
-				}
-			}
-
-			//default value on: delay between measurements in Ranging continuous mode.
 		rawData[0] = 0xFF;
-		if(HAL_I2C_Mem_Write(hi2c, POLOLU_WRITE_ADDRESS, POLOLU_SYSRANGE__INTERMEASUREMENT_PERIOD_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
-		{
-			rawData[14] = 0xFA;
-		}
 
 		//get Maximum time to run measurement in Ranging modes
 		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, SYSRANGE_MAX_CONVERGENCE_TIME, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
 		{
-			rawData[0] = rawData[0] & 0b11111111;
+			rawData[0] = rawData[0] & 0b00111111;
+			rawData[0] = rawData[0] | 0x31;
 			if(HAL_I2C_Mem_Write(hi2c, POLOLU_WRITE_ADDRESS, SYSRANGE_MAX_CONVERGENCE_TIME, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
 			{
-			rawData[14] = 0xf8;
+				rawData[14] = 0xf8;
 			}
 		}
 
@@ -167,7 +254,6 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint16_t accRegAddr, 
 		{
 			rawData[14] = 0xF1;
 		}
-
 //	}
 
 	//na 0x212 wpisac 7bitowy adres dla kazdego z osobna
@@ -175,6 +261,20 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint16_t accRegAddr, 
 	writeI2C(hi2c, ACC_SENS_ADDR, &accRegAddr, &regValue);
 #endif
 }
+void RulerSensor::writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value)
+{
+	if(HAL_I2C_Mem_Write(hi2c, POLOLU_WRITE_ADDRESS, address, POLOLU_REGISTER_ADDRESS_SIZE, value, 1, 1) == HAL_OK){
+
+	}
+}
+
+ void RulerSensor::writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value, uint8_t size)
+{
+	if(HAL_I2C_Mem_Write(hi2c, POLOLU_WRITE_ADDRESS, address, POLOLU_REGISTER_ADDRESS_SIZE, value, size, 1) == HAL_OK){
+
+	}
+}
+
 
 uint16_t RulerSensor::getBufferDataInArray(DataBuffer<IMUData> &buffer, uint8_t *dataBuffer)
 {
@@ -228,35 +328,6 @@ void RulerSensor::startMeasurement(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr, 
 	{
 
 	}
-}
-
-void RulerSensor::getHistoryDataBuffer(){
-		uint8_t mesTemp = 0x0;
-		rawData[0] = 0x08;
-		//read historical data
-		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, POLOLU_HISTORICAL_DATA_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, size, 1) == HAL_OK)
-			{
-				dataTimeStamp = HAL_GetTick();
-				mesTemp = rawData[0];
-			}
-		//error status
-		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, POLOLU_RESULT_RANGE_STATUS_ADDRESS, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
-			{
-				dataTimeStamp = HAL_GetTick();
-
-			}
-		//if another error than 1100: Raw Ranging Algo Underflow
-		if (rawData[0] & 0b11110000 != 0x11000000)
-			{
-				rawData[0] = mesTemp;
-			}
-
-		//raw_range_value
-		if(HAL_I2C_Mem_Read(hi2c, POLOLU_READ_ADDRESS, 0x064, POLOLU_REGISTER_ADDRESS_SIZE, rawData, 1, 1) == HAL_OK)
-			{
-				dataTimeStamp = HAL_GetTick();
-			}
-
 }
 
 uint16_t RulerSensor::convertSevenBitAddressToWriteAddress(uint16_t sevenBitAddress){

@@ -42,12 +42,6 @@
 #include "Electromagnet.h"
 #include "TimeMeasurementSystem.h"
 #include "UltrasoundManager.h"
-#include "vl6180x_api.h"
-#include "vl6180x_cfg.h"
-#include "vl6180x_def.h"
-#include "vl6180x_i2c.h"
-#include "vl6180x_platform.h"
-#include "vl6180x_types.h"
 
 extern "C" void UART_GPS_RX_PROCESSING(void);
 extern "C" void UART_LIDAR_RX_PROCESSING(void);

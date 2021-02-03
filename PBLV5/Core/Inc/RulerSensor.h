@@ -38,7 +38,8 @@ class RulerSensor {
 	uint16_t getBufferDataInArray(DataBuffer<IMUData> &buffer, uint8_t *dataBuffer);
 	POLOLU_DEVICE_STATUS getDeviceStatus(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr);
 	void startMeasurement(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr, uint8_t *regValue);
-	void getHistoryDataBuffer();
+	void writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value);
+	void writePololu(I2C_HandleTypeDef *hi2c, uint16_t address, uint8_t *value, uint8_t size);
 	uint16_t convertSevenBitAddressToWriteAddress(uint16_t sevenBitAddress);
 	uint16_t convertSevenBitAddressToReadAddress(uint16_t sevenBitAddress);
 
