@@ -6,8 +6,8 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 5
 Title "STM32F7 based AGV-ROS module"
-Date "2021-01-02"
-Rev "7.2"
+Date "2021-02-03"
+Rev "7.3"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -696,7 +696,7 @@ Nucleo144-F767ZI Ardunio Connector usage
 Text Notes 6000 7400 0    50   Italic 0
 Bridge numbers may be different than on the board\n
 Text Notes 14900 7250 0    50   Italic 0
-DC Motors with gearbox\nXD-37G520
+DC Motors with gearbox\nXD-37GB520\nPololu 4742
 Text Notes 5950 10600 0    100  Italic 20
 IMU Sensors Board\n
 Text Notes 11250 8950 0    100  Italic 20
