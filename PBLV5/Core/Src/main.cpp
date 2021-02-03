@@ -101,7 +101,7 @@ DMA_HandleTypeDef hdma_usart6_rx;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-EncoderSystem encoderSystem(&htim3, &htim8, ENCODER1_Z_Pin, ENCODER2_Z_Pin);
+EncoderSystem encoderSystem(&htim8, &htim3, ENCODER2_Z_Pin, ENCODER1_Z_Pin);
 DrivingSystem drivingSystem(&htim1, TIM_CHANNEL_4, &htim1, TIM_CHANNEL_3);
 IMUSensor imuSensors(IMU_NUM_OF_ELEM);
 DataManagement dataManagement;
