@@ -275,8 +275,8 @@ uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
 	dataToReturn[3] = errorCode[1];
 	dataToReturn[4] = rawData[2];
 	dataToReturn[5] = errorCode[2];
-	dataToReturn[6] = 0xbb;
-	dataToReturn[7] = 0xcc;
+	dataToReturn[4] = rawData[3];
+	dataToReturn[5] = errorCode[3];
 
 	std::copy_n(dataToReturn, RULER_SENSOR_OBJECTDATAVOLUME, dataBuffer);
 
