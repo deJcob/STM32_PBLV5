@@ -6,8 +6,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 5
 Title "Power distribution"
-Date "2021-02-03"
-Rev "2.0"
+Date "2021-02-07"
+Rev "3.0"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -473,10 +473,6 @@ Wire Wire Line
 	1450 1000 1050 1000
 Wire Wire Line
 	1050 1150 1450 1150
-Wire Notes Line
-	1050 4450 5700 4450
-Wire Notes Line
-	5700 7400 1050 7400
 $Comp
 L Connector:Conn_01x01_Male J16
 U 1 1 5FF4FDE0
@@ -533,23 +529,23 @@ Wire Wire Line
 $Comp
 L Connector:Conn_01x01_Male J14
 U 1 1 5FF5C372
-P 1400 4800
-F 0 "J14" H 1506 4978 50  0000 C CNN
-F 1 "4.8mm M IN +" H 1506 4887 50  0000 C CNN
-F 2 "" H 1400 4800 50  0001 C CNN
-F 3 "~" H 1400 4800 50  0001 C CNN
-	1    1400 4800
+P 1400 4700
+F 0 "J14" H 1506 4878 50  0000 C CNN
+F 1 "4.8mm M IN +" H 1506 4787 50  0000 C CNN
+F 2 "" H 1400 4700 50  0001 C CNN
+F 3 "~" H 1400 4700 50  0001 C CNN
+	1    1400 4700
 	1    0    0    -1  
 $EndComp
 $Comp
 L Connector:Conn_01x01_Female J20
 U 1 1 5FF5C379
-P 5000 6750
-F 0 "J20" H 5027 6776 50  0000 L CNN
-F 1 "4.8mm F OUT -" H 5027 6685 50  0000 L CNN
-F 2 "" H 5000 6750 50  0001 C CNN
-F 3 "~" H 5000 6750 50  0001 C CNN
-	1    5000 6750
+P 5800 6750
+F 0 "J20" H 5827 6776 50  0000 L CNN
+F 1 "4.8mm F OUT -" H 5827 6685 50  0000 L CNN
+F 2 "" H 5800 6750 50  0001 C CNN
+F 3 "~" H 5800 6750 50  0001 C CNN
+	1    5800 6750
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -566,153 +562,14 @@ $EndComp
 $Comp
 L Connector:Conn_01x01_Female J19
 U 1 1 5FF5D487
-P 5000 4800
-F 0 "J19" H 5027 4826 50  0000 L CNN
-F 1 "4.8mm F OUT +" H 5027 4735 50  0000 L CNN
-F 2 "" H 5000 4800 50  0001 C CNN
-F 3 "~" H 5000 4800 50  0001 C CNN
-	1    5000 4800
+P 5800 4700
+F 0 "J19" H 5827 4726 50  0000 L CNN
+F 1 "4.8mm F OUT +" H 5827 4635 50  0000 L CNN
+F 2 "" H 5800 4700 50  0001 C CNN
+F 3 "~" H 5800 4700 50  0001 C CNN
+	1    5800 4700
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector:TestPoint_Probe TP2
-U 1 1 5FF64250
-P 3900 4800
-F 0 "TP2" H 4050 4850 50  0000 L CNN
-F 1 "Test point" H 4050 4750 50  0000 L CNN
-F 2 "" H 4100 4800 50  0001 C CNN
-F 3 "~" H 4100 4800 50  0001 C CNN
-	1    3900 4800
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1600 4800 3900 4800
-Connection ~ 3900 4800
-Wire Wire Line
-	3900 4800 4800 4800
-$Comp
-L Connector:TestPoint_Probe TP3
-U 1 1 5FF67955
-P 3900 6750
-F 0 "TP3" H 4050 6800 50  0000 L CNN
-F 1 "Test point" H 4050 6700 50  0000 L CNN
-F 2 "" H 4100 6750 50  0001 C CNN
-F 3 "~" H 4100 6750 50  0001 C CNN
-	1    3900 6750
-	1    0    0    -1  
-$EndComp
-$Comp
-L Device:R R4
-U 1 1 5FF67A77
-P 3100 5850
-F 0 "R4" V 2893 5850 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 5850 50  0000 C CNN
-F 2 "" V 3030 5850 50  0001 C CNN
-F 3 "~" H 3100 5850 50  0001 C CNN
-	1    3100 5850
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R3
-U 1 1 5FF67BFB
-P 3100 5550
-F 0 "R3" V 2893 5550 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 5550 50  0000 C CNN
-F 2 "" V 3030 5550 50  0001 C CNN
-F 3 "~" H 3100 5550 50  0001 C CNN
-	1    3100 5550
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R2
-U 1 1 5FF67C43
-P 3100 5250
-F 0 "R2" V 2893 5250 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 5250 50  0000 C CNN
-F 2 "" V 3030 5250 50  0001 C CNN
-F 3 "~" H 3100 5250 50  0001 C CNN
-	1    3100 5250
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R7
-U 1 1 5FF67D09
-P 3100 6750
-F 0 "R7" V 2893 6750 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 6750 50  0000 C CNN
-F 2 "" V 3030 6750 50  0001 C CNN
-F 3 "~" H 3100 6750 50  0001 C CNN
-	1    3100 6750
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R6
-U 1 1 5FF67D10
-P 3100 6450
-F 0 "R6" V 2893 6450 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 6450 50  0000 C CNN
-F 2 "" V 3030 6450 50  0001 C CNN
-F 3 "~" H 3100 6450 50  0001 C CNN
-	1    3100 6450
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R5
-U 1 1 5FF67D17
-P 3100 6150
-F 0 "R5" V 2893 6150 50  0000 C CNN
-F 1 "1 1% 0.6W" V 2984 6150 50  0000 C CNN
-F 2 "" V 3030 6150 50  0001 C CNN
-F 3 "~" H 3100 6150 50  0001 C CNN
-	1    3100 6150
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	2950 5250 2400 5250
-Wire Wire Line
-	2400 5250 2400 5550
-Wire Wire Line
-	2400 6750 2950 6750
-Wire Wire Line
-	2400 6450 2950 6450
-Connection ~ 2400 6450
-Wire Wire Line
-	2400 6450 2400 6750
-Wire Wire Line
-	2400 6150 2950 6150
-Connection ~ 2400 6150
-Wire Wire Line
-	2400 6150 2400 6450
-Wire Wire Line
-	2950 5850 2400 5850
-Connection ~ 2400 5850
-Wire Wire Line
-	2400 5850 2400 6150
-Wire Wire Line
-	2950 5550 2400 5550
-Connection ~ 2400 5550
-Wire Wire Line
-	2400 5550 2400 5850
-Wire Wire Line
-	2400 6750 1750 6750
-Connection ~ 2400 6750
-Connection ~ 3900 6750
-Wire Wire Line
-	3900 6750 4800 6750
-$Comp
-L Connector:TestPoint_Probe TP1
-U 1 1 5FF822ED
-P 1750 6750
-F 0 "TP1" H 1900 6800 50  0000 L CNN
-F 1 "Test point" H 1900 6700 50  0000 L CNN
-F 2 "" H 1950 6750 50  0001 C CNN
-F 3 "~" H 1950 6750 50  0001 C CNN
-	1    1750 6750
-	1    0    0    -1  
-$EndComp
-Connection ~ 1750 6750
-Wire Wire Line
-	1750 6750 1550 6750
 Text Notes 1100 7350 0    100  Italic 20
 Probe board 
 Text Notes 1100 7150 0    50   Italic 0
@@ -720,36 +577,7 @@ It is optional board designed for measeruing current \nconsumption by indirect m
 Wire Notes Line
 	1050 4450 1050 7400
 Wire Notes Line
-	5700 4450 5700 7400
-Wire Wire Line
-	3750 5250 3750 5550
-Connection ~ 3750 6750
-Wire Wire Line
-	3750 6750 3900 6750
-Connection ~ 3750 6450
-Wire Wire Line
-	3750 6450 3750 6750
-Connection ~ 3750 6150
-Wire Wire Line
-	3750 6150 3750 6450
-Connection ~ 3750 5850
-Wire Wire Line
-	3750 5850 3750 6150
-Connection ~ 3750 5550
-Wire Wire Line
-	3750 5550 3750 5850
-Wire Wire Line
-	3250 5250 3750 5250
-Wire Wire Line
-	3250 5550 3750 5550
-Wire Wire Line
-	3250 5850 3750 5850
-Wire Wire Line
-	3250 6150 3750 6150
-Wire Wire Line
-	3250 6450 3750 6450
-Wire Wire Line
-	3250 6750 3750 6750
+	6500 4450 6500 7400
 $Comp
 L MCU_ModuleV2:Pololu-D24V50F5 U26
 U 1 1 601C49E9
@@ -862,4 +690,219 @@ Wire Wire Line
 	9000 1900 9000 2200
 Wire Wire Line
 	9000 3500 9000 3800
+$Comp
+L MCU_ModuleV2:LTSR15-NP_0 U30
+U 1 1 6022318D
+P 4100 6050
+F 0 "U30" H 4350 6650 50  0000 C CNN
+F 1 "LTS15-NP" H 4350 6550 50  0000 C CNN
+F 2 "Sensor_Current:LEM_LTSR-NP" H 4100 5250 50  0001 C CNN
+F 3 "https://www.lem.com/sites/default/files/products_datasheets/ltsr_15-np.pdf" H 4100 5650 50  0001 C CNN
+	1    4100 6050
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:LM7805_TO220 U29
+U 1 1 602232A7
+P 2450 5100
+F 0 "U29" H 2450 5342 50  0000 C CNN
+F 1 "LM7805_TO220" H 2450 5251 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 2450 5325 50  0001 C CIN
+F 3 "http://www.fairchildsemi.com/ds/LM/LM7805.pdf" H 2450 5050 50  0001 C CNN
+	1    2450 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+BATT #PWR0117
+U 1 1 602234EA
+P 1450 5000
+F 0 "#PWR0117" H 1450 4850 50  0001 C CNN
+F 1 "+BATT" H 1465 5173 50  0000 C CNN
+F 2 "" H 1450 5000 50  0001 C CNN
+F 3 "" H 1450 5000 50  0001 C CNN
+	1    1450 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:-BATT #PWR0118
+U 1 1 6022361F
+P 1450 6000
+F 0 "#PWR0118" H 1450 5850 50  0001 C CNN
+F 1 "-BATT" H 1465 6173 50  0000 C CNN
+F 2 "" H 1450 6000 50  0001 C CNN
+F 3 "" H 1450 6000 50  0001 C CNN
+	1    1450 6000
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:Battery BT2
+U 1 1 60223702
+P 1450 5350
+F 0 "BT2" H 1558 5396 50  0000 L CNN
+F 1 "9V" H 1558 5305 50  0000 L CNN
+F 2 "" V 1450 5410 50  0001 C CNN
+F 3 "~" V 1450 5410 50  0001 C CNN
+	1    1450 5350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1450 5000 1450 5100
+$Comp
+L Device:C C1
+U 1 1 602274AE
+P 1900 5450
+F 0 "C1" H 2015 5496 50  0000 L CNN
+F 1 "C" H 2015 5405 50  0000 L CNN
+F 2 "" H 1938 5300 50  0001 C CNN
+F 3 "~" H 1900 5450 50  0001 C CNN
+	1    1900 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 6022751D
+P 2950 5450
+F 0 "C2" H 3065 5496 50  0000 L CNN
+F 1 "C" H 3065 5405 50  0000 L CNN
+F 2 "" H 2988 5300 50  0001 C CNN
+F 3 "~" H 2950 5450 50  0001 C CNN
+	1    2950 5450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1450 5100 1900 5100
+Connection ~ 1450 5100
+Wire Wire Line
+	1450 5100 1450 5150
+Wire Wire Line
+	1900 5300 1900 5100
+Connection ~ 1900 5100
+Wire Wire Line
+	1900 5100 2150 5100
+Wire Wire Line
+	1900 5600 1900 5750
+Wire Wire Line
+	1900 5750 2450 5750
+Wire Wire Line
+	2450 5750 2450 5400
+Wire Wire Line
+	1550 6750 2550 6750
+Wire Wire Line
+	1900 5750 1450 5750
+Wire Wire Line
+	1450 5550 1450 5750
+Connection ~ 1900 5750
+Connection ~ 1450 5750
+Wire Wire Line
+	1450 5750 1450 6000
+Wire Wire Line
+	2450 5750 2950 5750
+Wire Wire Line
+	2950 5750 2950 5600
+Connection ~ 2450 5750
+Wire Wire Line
+	2750 5100 2950 5100
+Wire Wire Line
+	2950 5100 2950 5300
+Wire Wire Line
+	2950 5100 4100 5100
+Connection ~ 2950 5100
+Wire Wire Line
+	4100 6550 4100 6750
+Connection ~ 4100 6750
+Wire Wire Line
+	4100 6750 5600 6750
+$Comp
+L Connector:TestPoint_Probe TP2
+U 1 1 60241C4F
+P 3000 6050
+F 0 "TP2" H 3150 6100 50  0000 L CNN
+F 1 "Output +" H 3150 6000 50  0000 L CNN
+F 2 "" H 3200 6050 50  0001 C CNN
+F 3 "~" H 3200 6050 50  0001 C CNN
+	1    3000 6050
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:TestPoint_Probe TP1
+U 1 1 60241CCF
+P 2550 6450
+F 0 "TP1" H 2703 6552 50  0000 L CNN
+F 1 "Output 0/GND" H 2703 6461 50  0000 L CNN
+F 2 "" H 2750 6450 50  0001 C CNN
+F 3 "~" H 2750 6450 50  0001 C CNN
+	1    2550 6450
+	1    0    0    -1  
+$EndComp
+Connection ~ 2550 6750
+Wire Wire Line
+	2550 6750 4100 6750
+$Comp
+L Connector:Conn_Coaxial J22
+U 1 1 60247CFC
+P 2550 6050
+F 0 "J22" H 2480 6288 50  0000 C CNN
+F 1 "BNC" H 2480 6197 50  0000 C CNN
+F 2 "" H 2550 6050 50  0001 C CNN
+F 3 " ~" H 2550 6050 50  0001 C CNN
+	1    2550 6050
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	4100 5100 4100 5550
+Wire Wire Line
+	2750 6050 3000 6050
+Wire Wire Line
+	2550 6250 2550 6450
+Connection ~ 2550 6450
+Wire Wire Line
+	2550 6450 2550 6750
+Connection ~ 3000 6050
+Wire Wire Line
+	3000 6050 3700 6050
+Wire Wire Line
+	1600 4700 4600 4700
+Wire Wire Line
+	4600 5750 4500 5750
+Wire Wire Line
+	4500 6350 5500 6350
+Wire Wire Line
+	5500 6350 5500 4700
+Wire Wire Line
+	5500 4700 5600 4700
+Wire Wire Line
+	4500 5850 4600 5850
+Wire Wire Line
+	4600 5850 4600 6150
+Wire Wire Line
+	4600 6150 4500 6150
+Wire Wire Line
+	4500 5950 4700 5950
+Wire Wire Line
+	4700 5950 4700 6250
+Wire Wire Line
+	4700 6250 4500 6250
+$Comp
+L Device:R R2
+U 1 1 6027CF02
+P 4600 5300
+F 0 "R2" H 4670 5346 50  0000 L CNN
+F 1 "0" H 4670 5255 50  0000 L CNN
+F 2 "" V 4530 5300 50  0001 C CNN
+F 3 "~" H 4600 5300 50  0001 C CNN
+	1    4600 5300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4600 5450 4600 5750
+Wire Wire Line
+	4600 5150 4600 4700
+Text Notes 4650 5600 0    50   Italic 0
+Used for wire loop\nBridge if not used\n
+Wire Notes Line
+	1050 4450 6500 4450
+Wire Notes Line
+	1050 7400 6500 7400
+Text Notes 4750 6100 0    50   Italic 0
+Ipn = 5 A\n
 $EndSCHEMATC
