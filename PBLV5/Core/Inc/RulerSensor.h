@@ -20,6 +20,7 @@ class RulerSensor {
  	uint8_t rulerSensorsData[8];
  	uint16_t writeAddresses[8];
  	uint16_t readAddresses[8];
+ 	uint16_t errorCounter[8];
 
 	uint8_t rawData[8];
 	uint8_t readData[8];

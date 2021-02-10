@@ -10,7 +10,7 @@ RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 	{
 //		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 //		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
-
+		errorCounter[i] = 0;
 		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 	}
@@ -46,10 +46,29 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 //	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 //	{
 
-		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
+	if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
+	{
+		errorCode[i] = readData[0] & 0xF0;
+		if (errorCode[i] == 0b00010000 || // VCSEL Coninuity TEST
+			errorCode[i] == 0b00100000 || // VCSEL Watchdog TEST
+			errorCode[i] == 0b00110000 || // VCSEL Watchdog
+			errorCode[i] == 0b01000000 || // PLL1 Lock
+			errorCode[i] == 0b01010000)   // PLL2 Lock
 		{
-			errorCode[i] = readData[0] & 0xF0;
+			errorCounter[i]++;
+			if (errorCounter[i] > 5)
+			{
+				writeData[i] = 0x00;
+				writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
+				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
+				writeData[i] = 0x60;
+				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
+				errorCounter[i] = 0;
+			}
+			rawData[i] = 225;
+			return;
 		}
+	}
 
 	if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, readAddresses[i]))
 	{
