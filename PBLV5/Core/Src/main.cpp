@@ -21,6 +21,7 @@
 #include "main.h"
 #include "lwip.h"
 
+#include "globalDefines.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -58,7 +59,6 @@ extern "C" void UART_ULTRASOUND_RX_PROCESSING(void);
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#include "globalDefines.h"
 #define UDP_CLIENT
 
 /* USER CODE END PD */
@@ -103,7 +103,7 @@ DMA_HandleTypeDef hdma_usart6_rx;
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
-EncoderSystem encoderSystem(&htim3, &htim8);
+EncoderSystem encoderSystem(&htim8, &htim3, ENCODER2_Z_Pin, ENCODER1_Z_Pin);
 DrivingSystem drivingSystem(&htim1, TIM_CHANNEL_4, &htim1, TIM_CHANNEL_3);
 IMUSensor imuSensors(IMU_NUM_OF_ELEM);
 RulerSensor rulerSensors(RULER_SENSORS_COUNT);
@@ -123,28 +123,27 @@ int16_t diffZTwo = 0;
 int16_t diffZOneTimerValue = 0;
 int16_t diffZTwoTimerValue = 0;
 
-volatile uint16_t adcMeasurement[2] = { 0 };
+volatile uint16_t adcMeasurement[2] = {0};
 
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
-{
-	{ID_PWM, DataPtrVolumePair{1, SIZE_GET_PWM, std::bind(&DrivingSystem::getDataInArray, &drivingSystem, std::placeholders::_1)}},
-	{ID_TIM, DataPtrVolumePair{1, SIZE_GET_TIM, std::bind(&TimerConfigurator::getDataInArray, &timerConfig, std::placeholders::_1)}},
-	{ID_ACC, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_ACC, std::bind(&IMUSensor::getAccData, &imuSensors, std::placeholders::_1)}},
-	{ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
-	{ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
-	{ID_RULER, DataPtrVolumePair{SIZE_GET_RULER_SENSOR, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
-	{ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
-	{ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
-	{ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},
-	{ID_CAN_DIST, DataPtrVolumePair{1, SIZE_CAN_DIST, std::bind(&CANLidar::getDistanceDataInArray, &canLidar, std::placeholders::_1)}},
-	{ID_CAN_SPEED, DataPtrVolumePair{1, SIZE_CAN_SPEED, std::bind(&CANLidar::getSpeedDataInArray, &canLidar, std::placeholders::_1)}},
-	{ID_CAN_REFLE, DataPtrVolumePair{1, SIZE_CAN_REFLE, std::bind(&CANLidar::getReflectionDataInArray, &canLidar, std::placeholders::_1)}},
-	{ID_RFID, DataPtrVolumePair{1, SIZE_RFID, std::bind(&RFIDManager::getDataInArray, &rfidManager, std::placeholders::_1)}},
-	{ID_ULTRASOUND, DataPtrVolumePair{1, SIZE_GET_ULTRASOUND, std::bind(&UltrasoundManager::getDataInArray, &ultrasoundManager, std::placeholders::_1)}},
-	{ID_TIM_MEASURE, DataPtrVolumePair{1, SIZE_GET_TIME_MEASURE, std::bind(&TimeMeasurementSystem::getDataInArray, &timMeasureSystem, std::placeholders::_1)}},
-	{ID_PACKETS_INFO, DataPtrVolumePair{1, SIZE_GET_PACKETS_INFO, std::bind(&DataManagement::getPacketsInfo, &dataManagement, std::placeholders::_1)}},
-	{ID_TIME_SYNC, DataPtrVolumePair{1, SIZE_GET_TIME_SYNC, std::bind(&TimeSync::getDataInArray, &timeSync, std::placeholders::_1)}}
-};
+    {
+        {ID_PWM, DataPtrVolumePair{1, SIZE_GET_PWM, std::bind(&DrivingSystem::getDataInArray, &drivingSystem, std::placeholders::_1)}},
+        {ID_TIM, DataPtrVolumePair{1, SIZE_GET_TIM, std::bind(&TimerConfigurator::getDataInArray, &timerConfig, std::placeholders::_1)}},
+        {ID_ACC, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_ACC, std::bind(&IMUSensor::getAccData, &imuSensors, std::placeholders::_1)}},
+        {ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
+        {ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
+        {ID_RULER, DataPtrVolumePair{SIZE_GET_RULER_SENSOR, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
+        {ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
+        {ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
+        {ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},
+        {ID_CAN_DIST, DataPtrVolumePair{1, SIZE_CAN_DIST, std::bind(&CANLidar::getDistanceDataInArray, &canLidar, std::placeholders::_1)}},
+        {ID_CAN_SPEED, DataPtrVolumePair{1, SIZE_CAN_SPEED, std::bind(&CANLidar::getSpeedDataInArray, &canLidar, std::placeholders::_1)}},
+        {ID_CAN_REFLE, DataPtrVolumePair{1, SIZE_CAN_REFLE, std::bind(&CANLidar::getReflectionDataInArray, &canLidar, std::placeholders::_1)}},
+        {ID_RFID, DataPtrVolumePair{1, SIZE_RFID, std::bind(&RFIDManager::getDataInArray, &rfidManager, std::placeholders::_1)}},
+        {ID_ULTRASOUND, DataPtrVolumePair{1, SIZE_GET_ULTRASOUND, std::bind(&UltrasoundManager::getDataInArray, &ultrasoundManager, std::placeholders::_1)}},
+        {ID_TIM_MEASURE, DataPtrVolumePair{1, SIZE_GET_TIME_MEASURE, std::bind(&TimeMeasurementSystem::getDataInArray, &timMeasureSystem, std::placeholders::_1)}},
+        {ID_PACKETS_INFO, DataPtrVolumePair{1, SIZE_GET_PACKETS_INFO, std::bind(&DataManagement::getPacketsInfo, &dataManagement, std::placeholders::_1)}},
+        {ID_TIME_SYNC, DataPtrVolumePair{1, SIZE_GET_TIME_SYNC, std::bind(&TimeSync::getDataInArray, &timeSync, std::placeholders::_1)}}};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -181,215 +180,192 @@ static void MX_I2C2_Init(void);
 
 int _write(int file, char *ptr, int len)
 {
-	for (int i = 0; i < len; i++)
-	{
-		ITM_SendChar(*ptr++);
-	}
-	return len;
+  for (int i = 0; i < len; i++)
+  {
+    ITM_SendChar(*ptr++);
+  }
+  return len;
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Instance == TIM7)
-	{
-		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	}
-	if (htim->Instance == TIM6)
-	{
-		timMeasureSystem.takeTS(0);
-		imuSensors.pullDataFromSensorsI2C(&hi2c1);
-		rulerSensors.pullDataFromSensorsI2C(&hi2c2);
-		timMeasureSystem.calculateElapsedTime(0);
-	}
-	if (htim->Instance == TIM9)
-	{
-		timMeasureSystem.takeTS(1);
+  if (htim->Instance == TIM7)
+  {
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+  }
+  if (htim->Instance == TIM6)
+  {
+    timMeasureSystem.takeTS(0);
+    imuSensors.pullDataFromSensorsI2C(&hi2c1);
+    rulerSensors.pullDataFromSensorsI2C(&hi2c2);
+    timMeasureSystem.calculateElapsedTime(0);
+  }
+  if (htim->Instance == TIM9)
+  {
+    timMeasureSystem.takeTS(1);
 
-		uint16_t dataLength;
-		std::unique_ptr<uint8_t[]> dataBuffer = std::make_unique<uint8_t[]>(dataManagement.getMaxDataSize());
+    uint16_t dataLength;
+    std::unique_ptr<uint8_t[]> dataBuffer = std::make_unique<uint8_t[]>(dataManagement.getMaxDataSize());
 
-		dataLength = dataManagement.getCollectedData(dataBuffer.get());
+    dataLength = dataManagement.getCollectedData(dataBuffer.get());
 
 #ifdef UDP_CLIENT
-		udp_client_send(dataBuffer.get(), dataLength);
+    udp_client_send(dataBuffer.get(), dataLength);
 #else
-		sendDataWhileConnected(dataBuffer.get(), dataLength);
+    sendDataWhileConnected(dataBuffer.get(), dataLength);
 #endif
 
-		timMeasureSystem.calculateElapsedTime(1);
-	}
-	if (htim->Instance == TIM10)
-		{
-			timMeasureSystem.takeTS(2);
+    timMeasureSystem.calculateElapsedTime(1);
+  }
+  if (htim->Instance == TIM10)
+  {
+    timMeasureSystem.takeTS(2);
 
-			encoderSystem.encoderService();
+    encoderSystem.encoderService();
 
-			timMeasureSystem.calculateElapsedTime(2);
-		}
+    timMeasureSystem.calculateElapsedTime(2);
+  }
 
-		if (htim->Instance == TIM11)
-		{
-			timMeasureSystem.takeTS(3);
+  if (htim->Instance == TIM11)
+  {
+    timMeasureSystem.takeTS(3);
 
-			drivingSystem.drivingService();
+    drivingSystem.drivingService();
 
-			timMeasureSystem.calculateElapsedTime(3);
-		}
+    timMeasureSystem.calculateElapsedTime(3);
+  }
 
-		if (htim->Instance == TIM13)
-		{
-			timMeasureSystem.takeTS(4);
+  if (htim->Instance == TIM13)
+  {
+    timMeasureSystem.takeTS(4);
 
-			canLidar.scheduleADASFrames();
+    canLidar.scheduleADASFrames();
 
-			timMeasureSystem.calculateElapsedTime(4);
-		}
+    timMeasureSystem.calculateElapsedTime(4);
+  }
 
-		if (htim->Instance == TIM12)
-		{
-			timMeasureSystem.takeTS(5);
+  if (htim->Instance == TIM12)
+  {
+    timMeasureSystem.takeTS(5);
 
-			ultrasoundManager.fetchDistanceData();
+    ultrasoundManager.fetchDistanceData();
 
-			timMeasureSystem.takeTS(5);
-		}
+    timMeasureSystem.takeTS(5);
+  }
 
-		if (htim->Instance == TIM14)
-		{
+  if (htim->Instance == TIM14)
+  {
 
-			if (diffZOneTimerValue > 0)
-			{
-				//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-				diffZOneTimerValue--;
-			}
+    if (diffZOneTimerValue > 0)
+    {
+      //HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+      diffZOneTimerValue--;
+    }
 
-			if (diffZTwoTimerValue > 0)
-			{
-				//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-				diffZTwoTimerValue--;
-			}
-		}
-
+    if (diffZTwoTimerValue > 0)
+    {
+      //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+      diffZTwoTimerValue--;
+    }
+  }
 }
-
 
 void UART_GPS_RX_PROCESSING(void)
 {
-	gpsManager.processRxData();
+  gpsManager.processRxData();
 }
 
 void UART_LIDAR_RX_PROCESSING()
 {
-	miniLidarManager.processRxData();
+  miniLidarManager.processRxData();
 }
 
 void UART_RFID_RX_PROCESSING(void)
 {
-	rfidManager.processRxData();
+  rfidManager.processRxData();
 }
 
 void UART_ULTRASOUND_RX_PROCESSING(void)
 {
-	ultrasoundManager.processRxData();
+  ultrasoundManager.processRxData();
 }
 
 void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(huart->Instance == USART6)
-	{
-		miniLidarManager.processRxData();
-	}
+  if (huart->Instance == USART6)
+  {
+    miniLidarManager.processRxData();
+  }
 
-	if(huart->Instance == UART5)
-	{
-		ultrasoundManager.processRxData();
-	}
+  if (huart->Instance == UART5)
+  {
+    ultrasoundManager.processRxData();
+  }
 
-	if(huart->Instance == USART2)
-	{
-		gpsManager.processRxData();
-	}
+  if (huart->Instance == USART2)
+  {
+    gpsManager.processRxData();
+  }
 
-	if(huart->Instance == UART4)
-	{
-		rfidManager.processRxData();
-	}
+  if (huart->Instance == UART4)
+  {
+    rfidManager.processRxData();
+  }
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if(huart->Instance == USART6)
-	{
-		miniLidarManager.processRxData();
-	}
+  if (huart->Instance == USART6)
+  {
+    miniLidarManager.processRxData();
+  }
 
-	if(huart->Instance == UART5)
-	{
-		ultrasoundManager.processRxData();
-	}
+  if (huart->Instance == UART5)
+  {
+    ultrasoundManager.processRxData();
+  }
 
-	if(huart->Instance == USART2)
-	{
-		gpsManager.processRxData();
-	}
+  if (huart->Instance == USART2)
+  {
+    gpsManager.processRxData();
+  }
 
-	if(huart->Instance == UART4)
-	{
-		rfidManager.processRxData();
-	}
+  if (huart->Instance == UART4)
+  {
+    rfidManager.processRxData();
+  }
 }
 
 void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan)
 {
-	canLidar.sendCANFrames();
+  canLidar.sendCANFrames();
 }
 
 void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef *hcan)
 {
-	canLidar.sendCANFrames();
+  canLidar.sendCANFrames();
 }
 
 void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan)
 {
-	canLidar.sendCANFrames();
+  canLidar.sendCANFrames();
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	canLidar.processRXData(CAN_RX_FIFO0);
+  canLidar.processRXData(CAN_RX_FIFO0);
 }
 
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	canLidar.processRXData(CAN_RX_FIFO1);
+  canLidar.processRXData(CAN_RX_FIFO1);
 }
- uint8_t imu[4];
+uint8_t imu[4];
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == ENCODER1_Z_Pin)
-	{
-		if (encoderSystem.diffBetweenPreviousZ(0) != 0)
-		{
-			// set error state
-			//HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-			diffZOne = encoderSystem.diffBetweenPreviousZ(0);
-			diffZOneTimerValue = abs(diffZOne);
-		}
-
-	}
-	if (GPIO_Pin == ENCODER2_Z_Pin)
-	{
-		if(encoderSystem.diffBetweenPreviousZ(1) != 0)
-		{
-			// set error state
-			//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-			diffZTwo = encoderSystem.diffBetweenPreviousZ(1);
-			diffZTwoTimerValue = abs(diffZTwo);
-		};
-	}
+  //encoderSystem.checkError(&GPIO_Pin);
 }
-
 
 /* USER CODE END 0 */
 
@@ -446,43 +422,43 @@ int main(void)
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adcMeasurement, 2);
-//  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adcMeasurement, 2);
+  //  HAL_ADC_Start(&hadc1);
 
   canLidar.configureCAN();
 
-    HAL_UART_Receive_DMA(&huart2, gpsManager.getDataBuffer(), gpsManager.getBufferLength());
-    HAL_UART_Receive_DMA(&huart6, miniLidarManager.getDataBuffer(), miniLidarManager.getBufferLength());
-    HAL_UART_Receive_DMA(&huart4, rfidManager.getDataBuffer(), rfidManager.getBufferLength());
-    HAL_UART_Receive_DMA(&huart5, ultrasoundManager.getDataBuffer(), ultrasoundManager.getBufferLength());
+  HAL_UART_Receive_DMA(&huart2, gpsManager.getDataBuffer(), gpsManager.getBufferLength());
+  HAL_UART_Receive_DMA(&huart6, miniLidarManager.getDataBuffer(), miniLidarManager.getBufferLength());
+  HAL_UART_Receive_DMA(&huart4, rfidManager.getDataBuffer(), rfidManager.getBufferLength());
+  HAL_UART_Receive_DMA(&huart5, ultrasoundManager.getDataBuffer(), ultrasoundManager.getBufferLength());
 
-    HAL_I2C_Init(&hi2c1);
-    HAL_I2C_Init(&hi2c2);
-    imuSensors.initializeI2C_Sensors(&hi2c1);
-    rulerSensors.initializeI2C_Sensors(&hi2c2);
+  HAL_I2C_Init(&hi2c1);
+  HAL_I2C_Init(&hi2c2);
+  imuSensors.initializeI2C_Sensors(&hi2c1);
+  rulerSensors.initializeI2C_Sensors(&hi2c2);
 
-    drivingSystem.initialize();
+  drivingSystem.initialize();
 
-    dataManagement.configure(&dataPtrMap);
-    tcp_server_init();
+  dataManagement.configure(&dataPtrMap);
+  tcp_server_init();
 
-  #ifdef UDP_CLIENT
-    udp_client_connect();
-  #endif
+#ifdef UDP_CLIENT
+  udp_client_connect();
+#endif
 
-    HAL_TIM_Base_Start(&htim14);
-    HAL_TIM_Base_Start_IT(&htim6);
-    HAL_TIM_Base_Start_IT(&htim7);
-    HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
-    HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
-    HAL_TIM_Base_Start_IT(&htim10);
-    HAL_CAN_Start(&hcan1);
-    HAL_TIM_Base_Start_IT(&htim13);
-    HAL_TIM_Base_Start(&htim12);
-    HAL_TIM_Base_Start_IT(&htim9);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
-    HAL_TIM_Base_Start_IT(&htim11);
+  HAL_TIM_Base_Start(&htim14);
+  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim7);
+  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_TIM_Base_Start_IT(&htim10);
+  HAL_CAN_Start(&hcan1);
+  HAL_TIM_Base_Start_IT(&htim13);
+  HAL_TIM_Base_Start(&htim12);
+  HAL_TIM_Base_Start_IT(&htim9);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+  HAL_TIM_Base_Start_IT(&htim11);
 
   /* USER CODE END 2 */
 
@@ -490,7 +466,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  MX_LWIP_Process();
+    MX_LWIP_Process();
 
     /* USER CODE END WHILE */
 
@@ -536,8 +512,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -547,10 +522,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART6
-                              |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_UART5
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C2
-                              |RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2 | RCC_PERIPHCLK_USART6 | RCC_PERIPHCLK_UART4 | RCC_PERIPHCLK_UART5 | RCC_PERIPHCLK_I2C1 | RCC_PERIPHCLK_I2C2 | RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart4ClockSelection = RCC_UART4CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
@@ -619,7 +591,6 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
 }
 
 /**
@@ -656,7 +627,6 @@ static void MX_CAN1_Init(void)
   /* USER CODE BEGIN CAN1_Init 2 */
 
   /* USER CODE END CAN1_Init 2 */
-
 }
 
 /**
@@ -702,7 +672,6 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
 }
 
 /**
@@ -748,7 +717,6 @@ static void MX_I2C2_Init(void)
   /* USER CODE BEGIN I2C2_Init 2 */
 
   /* USER CODE END I2C2_Init 2 */
-
 }
 
 /**
@@ -788,7 +756,6 @@ static void MX_SPI2_Init(void)
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
-
 }
 
 /**
@@ -872,7 +839,6 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 2 */
   HAL_TIM_MspPostInit(&htim1);
-
 }
 
 /**
@@ -896,7 +862,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 0;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 99;
+  htim3.Init.Period = 1024;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
@@ -921,7 +887,6 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
-
 }
 
 /**
@@ -959,7 +924,6 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 2 */
 
   /* USER CODE END TIM6_Init 2 */
-
 }
 
 /**
@@ -997,7 +961,6 @@ static void MX_TIM7_Init(void)
   /* USER CODE BEGIN TIM7_Init 2 */
 
   /* USER CODE END TIM7_Init 2 */
-
 }
 
 /**
@@ -1021,7 +984,7 @@ static void MX_TIM8_Init(void)
   htim8.Instance = TIM8;
   htim8.Init.Prescaler = 0;
   htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim8.Init.Period = 99;
+  htim8.Init.Period = 1024;
   htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim8.Init.RepetitionCounter = 0;
   htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -1048,7 +1011,6 @@ static void MX_TIM8_Init(void)
   /* USER CODE BEGIN TIM8_Init 2 */
 
   /* USER CODE END TIM8_Init 2 */
-
 }
 
 /**
@@ -1086,7 +1048,6 @@ static void MX_TIM9_Init(void)
   /* USER CODE BEGIN TIM9_Init 2 */
 
   /* USER CODE END TIM9_Init 2 */
-
 }
 
 /**
@@ -1117,7 +1078,6 @@ static void MX_TIM10_Init(void)
   /* USER CODE BEGIN TIM10_Init 2 */
 
   /* USER CODE END TIM10_Init 2 */
-
 }
 
 /**
@@ -1148,7 +1108,6 @@ static void MX_TIM11_Init(void)
   /* USER CODE BEGIN TIM11_Init 2 */
 
   /* USER CODE END TIM11_Init 2 */
-
 }
 
 /**
@@ -1186,7 +1145,6 @@ static void MX_TIM12_Init(void)
   /* USER CODE BEGIN TIM12_Init 2 */
 
   /* USER CODE END TIM12_Init 2 */
-
 }
 
 /**
@@ -1217,7 +1175,6 @@ static void MX_TIM13_Init(void)
   /* USER CODE BEGIN TIM13_Init 2 */
 
   /* USER CODE END TIM13_Init 2 */
-
 }
 
 /**
@@ -1248,7 +1205,6 @@ static void MX_TIM14_Init(void)
   /* USER CODE BEGIN TIM14_Init 2 */
 
   /* USER CODE END TIM14_Init 2 */
-
 }
 
 /**
@@ -1283,7 +1239,6 @@ static void MX_UART4_Init(void)
   /* USER CODE BEGIN UART4_Init 2 */
 
   /* USER CODE END UART4_Init 2 */
-
 }
 
 /**
@@ -1318,7 +1273,6 @@ static void MX_UART5_Init(void)
   /* USER CODE BEGIN UART5_Init 2 */
 
   /* USER CODE END UART5_Init 2 */
-
 }
 
 /**
@@ -1353,7 +1307,6 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
@@ -1388,7 +1341,6 @@ static void MX_USART6_UART_Init(void)
   /* USER CODE BEGIN USART6_Init 2 */
 
   /* USER CODE END USART6_Init 2 */
-
 }
 
 /**
@@ -1423,7 +1375,6 @@ static void MX_USB_OTG_FS_PCD_Init(void)
   /* USER CODE BEGIN USB_OTG_FS_Init 2 */
 
   /* USER CODE END USB_OTG_FS_Init 2 */
-
 }
 
 /**
@@ -1452,7 +1403,6 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream4_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
-
 }
 
 /**
@@ -1475,13 +1425,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, BRIDGE_B1_Pin|BRIDGE_A2_Pin|TESTOWA_Pin|BRIDGE_A1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, BRIDGE_B1_Pin | BRIDGE_A2_Pin | TESTOWA_Pin | BRIDGE_A1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BRIDGE_B2_GPIO_Port, BRIDGE_B2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LD1_Pin | LD3_Pin | LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -1499,7 +1449,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : BRIDGE_B1_Pin BRIDGE_A2_Pin BRIDGE_A1_Pin */
-  GPIO_InitStruct.Pin = BRIDGE_B1_Pin|BRIDGE_A2_Pin|BRIDGE_A1_Pin;
+  GPIO_InitStruct.Pin = BRIDGE_B1_Pin | BRIDGE_A2_Pin | BRIDGE_A1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1520,7 +1470,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BRIDGE_B2_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
-  GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
+  GPIO_InitStruct.Pin = LD1_Pin | LD3_Pin | LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1539,7 +1489,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(ENCODER2_Z_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : STLK_RX_Pin STLK_TX_Pin */
-  GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;
+  GPIO_InitStruct.Pin = STLK_RX_Pin | STLK_TX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -1576,7 +1526,6 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -1595,7 +1544,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

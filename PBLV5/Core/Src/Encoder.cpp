@@ -7,9 +7,10 @@
 
 #include <Encoder.h>
 
-Encoder::Encoder() : speedBuffer(DEFAULT_NUM_OF_CHECKS)
+Encoder::Encoder() : speedBuffer(MAX_BUFFER_SIZE)
 {
 }
+
 
 Encoder::~Encoder()
 {
@@ -19,30 +20,43 @@ Encoder::~Encoder()
 void Encoder::initialize(TIM_HandleTypeDef *htim)
 {
 	this->htim = htim;
+	htim->Instance->CNT = PULSE_QUANTITY * 2; // Ustawiam wartość na środku licznika timera, ten ma wielkość 4*PULSE_QUANTITY
 }
+
+void Encoder::initialize(TIM_HandleTypeDef *htim, uint16_t InterruptZSignal)
+{
+	initialize(htim);
+	interruptZpin = InterruptZSignal;
+
+}
+
 
 bool Encoder::checkIfMoveMade()
 {
 	presentTimRegisterValue = htim->Instance->CNT;
-	diff = presentTimRegisterValue - lastTimRegisterValue;
-	if (checkIfOverflow())
+
+	diff = (int16_t)presentTimRegisterValue - (int16_t)lastTimRegisterValue;
+
+	if (presentTimRegisterValue > 3 * PULSE_QUANTITY) // Przepełnienie w górę
 	{
-		if (lastTimRegisterValue > HALF_OF_TIM_ARR)
-		{
-			diff = PULSE_QUANTITY - lastTimRegisterValue + presentTimRegisterValue; // z 99 -> 0
-		}
-		else
-		{
-			diff = PULSE_QUANTITY + lastTimRegisterValue - presentTimRegisterValue; // z 0 -> 99
-		}
+		htim->Instance->CNT = htim->Instance->CNT - PULSE_QUANTITY;
+		presentTimRegisterValue = presentTimRegisterValue - PULSE_QUANTITY;
+	}
+	else if (presentTimRegisterValue < 1 * PULSE_QUANTITY) // Przepełnienie w dół
+	{
+		htim->Instance->CNT = htim->Instance->CNT + PULSE_QUANTITY;
+		presentTimRegisterValue = presentTimRegisterValue + PULSE_QUANTITY;
 	}
 
-	if (abs(diff) > 0)
+	lastTimRegisterValue = presentTimRegisterValue;
+
+	presentTimeStamp = HAL_GetTick();
+	elapsedTime = presentTimeStamp - lastTimeStamp;
+	lastTimeStamp = presentTimeStamp;
+
+
+	if (diff != 0)
 	{
-		presentTimeStamp = HAL_GetTick();
-		elapsedTime = presentTimeStamp - lastTimeStamp;
-		lastTimeStamp += elapsedTime;
-		lastTimRegisterValue = presentTimRegisterValue;
 		return true;
 	}
 	else
@@ -65,19 +79,40 @@ bool Encoder::checkIfOverflow()
 
 void Encoder::calcSpeed()
 {
+#ifdef SPEED_IN_RADIANS
 
-#ifdef RAD_SPEED
-	tempSpeed.floatVal = (((uint16_t)diff * ANGLE_PER_PULSE_RAD) / ((elapsedTime) / 1000.0)); // RAD/s
+	tempSpeed.floatVal = ((diff * ANGLE_PER_PULSE_RAD) / ((elapsedTime) / 1000.0)); // RAD/s
 
 	speedBuffer.put(tempSpeed);
 
-	for (uint8_t i = 0; i < speedBuffer.size(); i++)
+	if (filter == movingMean)
 	{
-		tempSpeed.floatVal += speedBuffer.getOfIndex(i).floatVal;
+		tempSpeed.floatVal = 0.0;
+
+		for (uint8_t i = 0; i < speedBuffer.size(); i++)
+		{
+			tempSpeed.floatVal +=  speedBuffer.getOfIndex(i).floatVal;
+		}
+		speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
+	}
+	else if (filter == savitzkyGolay)
+	{
+		tempSpeed.floatVal = 0.0;
+
+		for (uint8_t i = 0; i < speedBuffer.size(); i++)
+		{
+			tempSpeed.floatVal += sgolayArr[i] * speedBuffer.getOfIndex(i).floatVal;
+		}
+
+		speed.floatVal = tempSpeed.floatVal;
+	}
+	else
+	{
+		speed.floatVal = tempSpeed.floatVal;
 	}
 
-	speed.floatVal = tempSpeed.floatVal / speedBuffer.size();
-	distance.floatVal = (abs(diff) * ANGLE_PER_PULSE_RAD); // RAD
+	distance.int32Val = distance.int32Val + diff;
+
 #else
 	tempSpeed.floatVal = ((abs(diff) * EXTERN_WHEEL_RATIO) / 10.0) / ((elapsedTime) / 1000.0);
 
@@ -99,7 +134,7 @@ void Encoder::encoderIteration()
 	{
 		if (diff > 0)
 		{
-			if (checkIfOverflow())
+			if (presentTimRegisterValue < lastTimRegisterValue)
 			{
 				encoderState = backRun;
 			}
@@ -110,7 +145,7 @@ void Encoder::encoderIteration()
 		}
 		else
 		{
-			if (checkIfOverflow())
+			if (presentTimRegisterValue > lastTimRegisterValue)
 			{
 				encoderState = forwardRun;
 			}
@@ -120,7 +155,6 @@ void Encoder::encoderIteration()
 			}
 		}
 
-		calcSpeed();
 		numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
 	}
 	else
@@ -130,27 +164,50 @@ void Encoder::encoderIteration()
 		tempSpeed.floatVal = 0;
 		speedBuffer.put(tempSpeed);
 
+#ifndef SPEED_IN_RADIANS
 		distance.floatVal = 0;
+#endif
 
 		if (!numberOfGoOnChecks)
 		{
-			speed.floatVal = 0;
+			speed.floatVal = 0.0;
 			encoderState = idle_stat;
 			numberOfGoOnChecks = DEFAULT_NUM_OF_CHECKS;
-			lastTimeStamp = HAL_GetTick();
-			speedBuffer.reset();
+			//lastTimeStamp = HAL_GetTick();
+			//speedBuffer.reset();
+			//speedBuffer.put(tempSpeed);
 		}
 	}
+
+	calcSpeed();
 }
 
-int16_t Encoder::returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition()
+uint16_t Encoder::getAbsoluteZsensorValue()
+{								// floorf korzysta z FPU w przeciwienstwie do floor() - to jest na double
+	return controlSumOfZSensor + floorf(htim->Instance->CNT/timArrMultiplicity)*PULSE_QUANTITY;
+}
+
+bool Encoder::zInterruptHandler(uint16_t *GPIO_Pin)
 {
-	if (this->thisIsFirstTimeHere)
+	if (*GPIO_Pin == interruptZpin)
 	{
-		this->thisIsFirstTimeHere = false;
-		this->controlSumOfZSensor = (uint8_t)htim->Instance->CNT;
+		if (abs(checkEncoderErrorSize() > 3))
+		{
+			htim->Instance->CNT = getAbsoluteZsensorValue();
+		}
+		return true;
 	}
-	return ((int16_t)controlSumOfZSensor - (int16_t)htim->Instance->CNT);
+	return false;
+}
+
+int16_t Encoder::checkEncoderErrorSize()
+{
+	if (!signalZinitialized)
+	{
+		signalZinitialized = true;
+		controlSumOfZSensor = (uint16_t)htim->Instance->CNT % timArrMultiplicity;
+	}
+	return ((int16_t)getAbsoluteZsensorValue() - (int16_t)htim->Instance->CNT);
 }
 
 uint8_t Encoder::getDataInArray(uint8_t *dataBuffer)
@@ -162,6 +219,7 @@ uint8_t Encoder::getDataInArray(uint8_t *dataBuffer)
 	dataToReturn[2] = speed.arrVal[2];
 	dataToReturn[3] = speed.arrVal[1];
 	dataToReturn[4] = speed.arrVal[0];
+
 	dataToReturn[5] = distance.arrVal[3];
 	dataToReturn[6] = distance.arrVal[2];
 	dataToReturn[7] = distance.arrVal[1];

@@ -32,13 +32,14 @@ class EncoderSystem
 	Encoder encoders[NUM_OF_ENCODERS];
 
 public:
-	EncoderSystem(TIM_HandleTypeDef* htimL, TIM_HandleTypeDef* htimR);
+	EncoderSystem(TIM_HandleTypeDef *htimL, TIM_HandleTypeDef *htimR);
+	EncoderSystem(TIM_HandleTypeDef *htimL, TIM_HandleTypeDef *htimR, uint16_t intZsigL, uint16_t intZsigR);
 	virtual ~EncoderSystem();
 
 	void encoderService();
-	int16_t diffBetweenPreviousZ(uint8_t encoderIndex);
+	void checkError(uint16_t *GPIO_Pin);
 
-	uint8_t getDataInArray(uint8_t* dataBuffer);
+	uint8_t getDataInArray(uint8_t *dataBuffer);
 };
 
 #endif /* ENCODERSYSTEM_H_ */

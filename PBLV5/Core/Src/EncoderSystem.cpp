@@ -13,6 +13,12 @@ EncoderSystem::EncoderSystem(TIM_HandleTypeDef* htimL, TIM_HandleTypeDef* htimR)
 	encoders[REAR_RIGHT].initialize(htimR);
 }
 
+EncoderSystem::EncoderSystem(TIM_HandleTypeDef* htimL, TIM_HandleTypeDef* htimR, uint16_t intZsigL, uint16_t intZsigR)
+{
+	encoders[REAR_LEFT].initialize(htimL, intZsigL);
+	encoders[REAR_RIGHT].initialize(htimR, intZsigR);
+}
+
 EncoderSystem::~EncoderSystem() {
 	// TODO Auto-generated destructor stub
 }
@@ -25,9 +31,15 @@ void EncoderSystem::encoderService()
 	}
 }
 
-int16_t EncoderSystem::diffBetweenPreviousZ(uint8_t encoderIndex){
-	return encoders[encoderIndex].returnDifferenceBetweenReferenceZSensorPositionAndCurrentPosition();
+void EncoderSystem::checkError(uint16_t* GPIO_Pin)
+{
+	for(uint8_t i = 0; i < NUM_OF_ENCODERS; i++)
+	{
+		if (encoders[i].zInterruptHandler(GPIO_Pin)) break;
+	}
 }
+
+
 
 uint8_t EncoderSystem::getDataInArray(uint8_t* dataBuffer)
 {
