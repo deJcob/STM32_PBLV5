@@ -3,7 +3,7 @@
 
 RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 
-	#ifdef POLOLU
+#ifdef POLOLU
 	SENSORS_COUNT = 4;
 
 	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
@@ -11,6 +11,7 @@ RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 //		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 //		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 		errorCounter[i] = 0;
+		sensorConfigured[i] = false;
 		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 	}
@@ -31,11 +32,15 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 {
 	i2cHandle = hi2c;
 	//initialize internal addresses values
-	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
+	for (uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
-		if(writeExpanderToReadSensor(hi2c, i))
+		if (!sensorConfigured[i] && writeExpanderToReadSensor(hi2c, i))
 		{
-			configurePololu(hi2c, i);
+			if (getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
+			{
+				configurePololu(hi2c, i);
+				sensorConfigured[i] = true;
+			}
 		}
 	}
 
@@ -45,6 +50,22 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 {
 //	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 //	{
+	if (!sensorConfigured[i])
+	{
+		if (writeExpanderToReadSensor(hi2c, i)) // If wasnt configured yet we are trying to do it
+		{
+			if (getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
+			{
+				configurePololu(hi2c, i);
+				sensorConfigured[i] = true;
+			}
+		}
+		else
+		{
+			rawData[i] = 235;
+			return;
+		}
+	}
 
 	if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
 	{
@@ -59,13 +80,14 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 			if (errorCounter[i] > 5)
 			{
 				writeData[i] = 0x00;
-				writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
-				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
+				writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]); // System fresh out reset
+				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]); // Reseting GPIO0
 				writeData[i] = 0x60;
 				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
 				errorCounter[i] = 0;
 			}
 			rawData[i] = 225;
+
 			return;
 		}
 	}
@@ -74,9 +96,11 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 	{
 		temporaryByte = readData[0];
 		temporaryByte &= 0b00000111;
-			if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE){//It means -> New Sample Ready threshold event
-			//czytanie wartosci dopiero jak jest 4 na powyzszym
-				if(readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i])){
+		if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE) // It means -> New Sample Ready threshold event
+		{
+			// czytanie wartosci dopiero jak jest 4 na powyzszym
+			if (readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i]))
+			{
 //					if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i])){
 				//jak dostane to czyszcenie
 				rawData[i] = readData[0];
@@ -87,7 +111,6 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 				 * Bit [1] - Clear ALS Int
 				 * Bit [2] - Clear Error Int.
 				 */
-
 				//clear interrupt status
 				writeBytePololu(hi2c, SYSTEM__INTERRUPT_CLEAR, writeData, writeAddresses[i]);
 
@@ -232,29 +255,29 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint8_t i)
 		writeData[0] = 0x24;
 		writeBytePololu(hi2c, 0x014, writeData, writeAddresses[i]);
 
-			if(readBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, readData, readAddresses[i]))
-				{
-				temporaryByte = readData[0] | POLOLU_SYSRANGE_START_CONTINOUS_MODE_START_VALUE;
-				writeData[0] = temporaryByte;
-				writeBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, writeData, writeAddresses[i]);
-				}
+		if (readBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, readData, readAddresses[i]))
+		{
+			temporaryByte = readData[0] | POLOLU_SYSRANGE_START_CONTINOUS_MODE_START_VALUE;
+			writeData[0] = temporaryByte;
+			writeBytePololu(hi2c, POLOLU_SYSRANGE_START_ADDRESS, writeData, writeAddresses[i]);
+		}
 
-			//get Maximum time to run measurement in Ranging modes
-			if(readBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, readData, readAddresses[i]))
-			{
-				temporaryByte = readData[0] & 0b00111111;
-				writeData[0] = temporaryByte | 0x31;
-				writeBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, writeData, writeAddresses[i]);
-			}
+		//get Maximum time to run measurement in Ranging modes
+		if (readBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, readData, readAddresses[i]))
+		{
+			temporaryByte = readData[0] & 0b00111111;
+			writeData[0] = temporaryByte | 0x31;
+			writeBytePololu(hi2c, SYSRANGE_MAX_CONVERGENCE_TIME, writeData, writeAddresses[i]);
+		}
 
-			//The internal readout averaging sample period can be adjusted from 0 to 255.
-			writeData[0] = 0x30;
-			writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, writeAddresses[i]);
+		//The internal readout averaging sample period can be adjusted from 0 to 255.
+		writeData[0] = 0x30;
+		writeBytePololu(hi2c, READOUT__AVERAGING_SAMPLE_PERIOD, writeData, writeAddresses[i]);
 
-			//system fresh out reset
-			writeData[0] = 0x00;
-			writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
-			//	}
+		//system fresh out reset
+		writeData[0] = 0x00;
+		writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
+		//	}
 
 			//address current sensor
 //			if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i]))
@@ -285,7 +308,8 @@ bool RulerSensor::writeExpanderToReadSensor(I2C_HandleTypeDef *hi2c, uint8_t sen
 {
 	writeData[0] = 0b00000001 << sensorIndex;
 	uint8_t ekspanderAddr = EXPANDER_ADDRESS << 1;
-	if(HAL_I2C_Mem_Write(hi2c, ekspanderAddr, 0x00, 1, writeData, 1, 1) == HAL_OK){
+	if(HAL_I2C_Mem_Write(hi2c, ekspanderAddr, 0x00, 1, writeData, 1, 1) == HAL_OK)
+	{
 		return true;
 	}
 	else
