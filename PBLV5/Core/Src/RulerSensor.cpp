@@ -4,13 +4,17 @@
 RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 
 	#ifdef POLOLU
-	SENSORS_COUNT = 1;
+	SENSORS_COUNT = 4;
 
 	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
-		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
-		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
+//		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
+//		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
+
+		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
+		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 	}
+	//0x070 bit ktory chce czytac
 
 #else
 	SENSORS_COUNT = 4;
@@ -29,7 +33,10 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 	//initialize internal addresses values
 	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
-		configurePololu(hi2c, i);
+		if(writeExpanderToReadSensor(hi2c, i))
+		{
+			configurePololu(hi2c, i);
+		}
 	}
 
 }
@@ -41,7 +48,7 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 
 		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
 		{
-			errorCode[i] = readData[i] & 0xF0;
+			errorCode[i] = readData[0] & 0xF0;
 		}
 
 	if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, readAddresses[i]))
@@ -50,7 +57,8 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 		temporaryByte &= 0b00000111;
 			if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE){//It means -> New Sample Ready threshold event
 			//czytanie wartosci dopiero jak jest 4 na powyzszym
-			if(readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i])){
+				if(readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i])){
+//					if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i])){
 				//jak dostane to czyszcenie
 				rawData[i] = readData[0];
 				writeData[0] = 0x07;
@@ -78,7 +86,10 @@ void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
 	{
 	#ifdef POLOLU
 		for(uint8_t i = 0; i < SENSORS_COUNT; i++){
-			pullPololuData(hi2c, i);
+			if(writeExpanderToReadSensor(hi2c, i))
+			{
+				pullPololuData(hi2c, i);
+			}
 		}
 	#else
 		pullSparkfunData(hi2c, ACC_SENS_ADDR, ACC_DATA | ACC_MULTIBYTE_READ,	ACC_DATA_SIZE);
@@ -93,18 +104,6 @@ void RulerSensor::writeI2C(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr , uint16_
 #else
 	//todo: sparkfun
 	//writeI2C(hi2c, ACC_SENS_ADDR, &accRegAddr, &regValue);
-#endif
-}
-
-void RulerSensor::configureSensors(I2C_HandleTypeDef *hi2c)
-{
-#ifdef POLOLU
-	for(uint8_t i = 0; i < SENSORS_COUNT; i++){
-		configurePololu(hi2c, i);
-	}
-	//na 0x212 wpisac 7bitowy adres dla kazdego z osobna
-#else
-	writeI2C(hi2c, ACC_SENS_ADDR, &accRegAddr, &regValue);
 #endif
 }
 
@@ -238,11 +237,21 @@ void RulerSensor::configurePololu(I2C_HandleTypeDef *hi2c, uint8_t i)
 			writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]);
 			//	}
 
+			//address current sensor
+//			if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i]))
+//			{
+//				temporaryByte = readData[0] & 0b10000000;
+//				writeData[0] = temporaryByte | 0x2A;
+//				writeData[0] = temporaryByte | 0x2B;
+//				writeData[0] = temporaryByte | 0x2C;
+//				writeBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, writeData, writeAddresses[i]);
+//			}
+
 }
 void RulerSensor::writeBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorWriteAddress)
 {
 	if(HAL_I2C_Mem_Write(hi2c, sensorWriteAddress, registerAddress, POLOLU_REGISTER_ADDRESS_SIZE, value, 1, 1) == HAL_OK){
-
+		writeCounter++;
 	}
 }
 
@@ -253,10 +262,24 @@ void RulerSensor::writeBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddr
 	}
 }
 
+bool RulerSensor::writeExpanderToReadSensor(I2C_HandleTypeDef *hi2c, uint8_t sensorIndex)
+{
+	writeData[0] = 0b00000001 << sensorIndex;
+	uint8_t ekspanderAddr = EXPANDER_ADDRESS << 1;
+	if(HAL_I2C_Mem_Write(hi2c, ekspanderAddr, 0x00, 1, writeData, 1, 1) == HAL_OK){
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 bool RulerSensor::readBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorReadAddress)
  {
 		if(HAL_I2C_Mem_Read(hi2c, sensorReadAddress, registerAddress, POLOLU_REGISTER_ADDRESS_SIZE, value, 1, 1) == HAL_OK)
 		{
+			readCounter++;
 			return true;
 		}
 		else
@@ -270,13 +293,9 @@ uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
 	uint8_t dataToReturn[RULER_SENSOR_OBJECTDATAVOLUME];
 
 	dataToReturn[0] = rawData[0];
-	dataToReturn[1] = errorCode[0];
-	dataToReturn[2] = rawData[1];
-	dataToReturn[3] = errorCode[1];
-	dataToReturn[4] = rawData[2];
-	dataToReturn[5] = errorCode[2];
-	dataToReturn[4] = rawData[3];
-	dataToReturn[5] = errorCode[3];
+	dataToReturn[1] = rawData[1];
+	dataToReturn[2] = rawData[2];
+	dataToReturn[3] = rawData[3];
 
 	std::copy_n(dataToReturn, RULER_SENSOR_OBJECTDATAVOLUME, dataBuffer);
 

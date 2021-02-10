@@ -132,7 +132,7 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
 	{ID_ACC, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_ACC, std::bind(&IMUSensor::getAccData, &imuSensors, std::placeholders::_1)}},
 	{ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
 	{ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
-	{ID_RULER, DataPtrVolumePair{RULER_SENSORS_COUNT, SIZE_GET_RULER_SENSOR, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
+	{ID_RULER, DataPtrVolumePair{SIZE_GET_RULER_SENSOR, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
 	{ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
 	{ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
 	{ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},
@@ -814,7 +814,7 @@ static void MX_TIM1_Init(void)
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 179;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 999;
+  htim1.Init.Period = 1199;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -944,7 +944,7 @@ static void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 899;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 199;
+  htim6.Init.Period = 1199;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -1071,7 +1071,7 @@ static void MX_TIM9_Init(void)
   htim9.Instance = TIM9;
   htim9.Init.Prescaler = 17999;
   htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim9.Init.Period = 99;
+  htim9.Init.Period = 119;
   htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim9) != HAL_OK)
@@ -1107,7 +1107,7 @@ static void MX_TIM10_Init(void)
   htim10.Instance = TIM10;
   htim10.Init.Prescaler = 17999;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 99;
+  htim10.Init.Period = 119;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -1138,7 +1138,7 @@ static void MX_TIM11_Init(void)
   htim11.Instance = TIM11;
   htim11.Init.Prescaler = 17999;
   htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim11.Init.Period = 99;
+  htim11.Init.Period = 119;
   htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
@@ -1171,7 +1171,7 @@ static void MX_TIM12_Init(void)
   htim12.Instance = TIM12;
   htim12.Init.Prescaler = 8999;
   htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim12.Init.Period = 199;
+  htim12.Init.Period = 239;
   htim12.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim12.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim12) != HAL_OK)
@@ -1207,7 +1207,7 @@ static void MX_TIM13_Init(void)
   htim13.Instance = TIM13;
   htim13.Init.Prescaler = 8999;
   htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim13.Init.Period = 99;
+  htim13.Init.Period = 119;
   htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
@@ -1236,7 +1236,7 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 2399;
+  htim14.Init.Prescaler = 5399;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 9999;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
