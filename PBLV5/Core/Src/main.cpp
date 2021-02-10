@@ -21,7 +21,6 @@
 #include "main.h"
 #include "lwip.h"
 
-#include "globalDefines.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -43,6 +42,7 @@
 #include "Electromagnet.h"
 #include "TimeMeasurementSystem.h"
 #include "UltrasoundManager.h"
+#include "globalDefines.h"
 
 extern "C" void UART_GPS_RX_PROCESSING(void);
 extern "C" void UART_LIDAR_RX_PROCESSING(void);
@@ -512,7 +512,8 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -522,7 +523,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2 | RCC_PERIPHCLK_USART6 | RCC_PERIPHCLK_UART4 | RCC_PERIPHCLK_UART5 | RCC_PERIPHCLK_I2C1 | RCC_PERIPHCLK_I2C2 | RCC_PERIPHCLK_CLK48;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART2|RCC_PERIPHCLK_USART6
+                              |RCC_PERIPHCLK_UART4|RCC_PERIPHCLK_UART5
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C2
+                              |RCC_PERIPHCLK_CLK48;
   PeriphClkInitStruct.Usart2ClockSelection = RCC_USART2CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart4ClockSelection = RCC_UART4CLKSOURCE_PCLK1;
   PeriphClkInitStruct.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
@@ -591,6 +595,7 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -627,6 +632,7 @@ static void MX_CAN1_Init(void)
   /* USER CODE BEGIN CAN1_Init 2 */
 
   /* USER CODE END CAN1_Init 2 */
+
 }
 
 /**
@@ -672,6 +678,7 @@ static void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
@@ -717,6 +724,7 @@ static void MX_I2C2_Init(void)
   /* USER CODE BEGIN I2C2_Init 2 */
 
   /* USER CODE END I2C2_Init 2 */
+
 }
 
 /**
@@ -756,6 +764,7 @@ static void MX_SPI2_Init(void)
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
+
 }
 
 /**
@@ -839,6 +848,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 2 */
   HAL_TIM_MspPostInit(&htim1);
+
 }
 
 /**
@@ -887,6 +897,7 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
+
 }
 
 /**
@@ -924,6 +935,7 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 2 */
 
   /* USER CODE END TIM6_Init 2 */
+
 }
 
 /**
@@ -961,6 +973,7 @@ static void MX_TIM7_Init(void)
   /* USER CODE BEGIN TIM7_Init 2 */
 
   /* USER CODE END TIM7_Init 2 */
+
 }
 
 /**
@@ -1011,6 +1024,7 @@ static void MX_TIM8_Init(void)
   /* USER CODE BEGIN TIM8_Init 2 */
 
   /* USER CODE END TIM8_Init 2 */
+
 }
 
 /**
@@ -1048,6 +1062,7 @@ static void MX_TIM9_Init(void)
   /* USER CODE BEGIN TIM9_Init 2 */
 
   /* USER CODE END TIM9_Init 2 */
+
 }
 
 /**
@@ -1078,6 +1093,7 @@ static void MX_TIM10_Init(void)
   /* USER CODE BEGIN TIM10_Init 2 */
 
   /* USER CODE END TIM10_Init 2 */
+
 }
 
 /**
@@ -1108,6 +1124,7 @@ static void MX_TIM11_Init(void)
   /* USER CODE BEGIN TIM11_Init 2 */
 
   /* USER CODE END TIM11_Init 2 */
+
 }
 
 /**
@@ -1145,6 +1162,7 @@ static void MX_TIM12_Init(void)
   /* USER CODE BEGIN TIM12_Init 2 */
 
   /* USER CODE END TIM12_Init 2 */
+
 }
 
 /**
@@ -1175,6 +1193,7 @@ static void MX_TIM13_Init(void)
   /* USER CODE BEGIN TIM13_Init 2 */
 
   /* USER CODE END TIM13_Init 2 */
+
 }
 
 /**
@@ -1193,7 +1212,7 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 5399;
+  htim14.Init.Prescaler = 2399;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 9999;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1205,6 +1224,7 @@ static void MX_TIM14_Init(void)
   /* USER CODE BEGIN TIM14_Init 2 */
 
   /* USER CODE END TIM14_Init 2 */
+
 }
 
 /**
@@ -1239,6 +1259,7 @@ static void MX_UART4_Init(void)
   /* USER CODE BEGIN UART4_Init 2 */
 
   /* USER CODE END UART4_Init 2 */
+
 }
 
 /**
@@ -1273,6 +1294,7 @@ static void MX_UART5_Init(void)
   /* USER CODE BEGIN UART5_Init 2 */
 
   /* USER CODE END UART5_Init 2 */
+
 }
 
 /**
@@ -1307,6 +1329,7 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
+
 }
 
 /**
@@ -1341,6 +1364,7 @@ static void MX_USART6_UART_Init(void)
   /* USER CODE BEGIN USART6_Init 2 */
 
   /* USER CODE END USART6_Init 2 */
+
 }
 
 /**
@@ -1375,6 +1399,7 @@ static void MX_USB_OTG_FS_PCD_Init(void)
   /* USER CODE BEGIN USB_OTG_FS_Init 2 */
 
   /* USER CODE END USB_OTG_FS_Init 2 */
+
 }
 
 /**
@@ -1403,6 +1428,7 @@ static void MX_DMA_Init(void)
   /* DMA2_Stream4_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
+
 }
 
 /**
@@ -1425,13 +1451,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOF, BRIDGE_B1_Pin | BRIDGE_A2_Pin | TESTOWA_Pin | BRIDGE_A1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, BRIDGE_B1_Pin|BRIDGE_A2_Pin|TESTOWA_Pin|BRIDGE_A1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BRIDGE_B2_GPIO_Port, BRIDGE_B2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD1_Pin | LD3_Pin | LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -1449,7 +1475,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(USER_Btn_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : BRIDGE_B1_Pin BRIDGE_A2_Pin BRIDGE_A1_Pin */
-  GPIO_InitStruct.Pin = BRIDGE_B1_Pin | BRIDGE_A2_Pin | BRIDGE_A1_Pin;
+  GPIO_InitStruct.Pin = BRIDGE_B1_Pin|BRIDGE_A2_Pin|BRIDGE_A1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1470,7 +1496,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(BRIDGE_B2_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD1_Pin LD3_Pin LD2_Pin */
-  GPIO_InitStruct.Pin = LD1_Pin | LD3_Pin | LD2_Pin;
+  GPIO_InitStruct.Pin = LD1_Pin|LD3_Pin|LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1489,7 +1515,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(ENCODER2_Z_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : STLK_RX_Pin STLK_TX_Pin */
-  GPIO_InitStruct.Pin = STLK_RX_Pin | STLK_TX_Pin;
+  GPIO_InitStruct.Pin = STLK_RX_Pin|STLK_TX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -1526,6 +1552,7 @@ static void MX_GPIO_Init(void)
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -1544,7 +1571,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
