@@ -132,7 +132,7 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
         {ID_ACC, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_ACC, std::bind(&IMUSensor::getAccData, &imuSensors, std::placeholders::_1)}},
         {ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
         {ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
-        {ID_RULER, DataPtrVolumePair{SIZE_GET_RULER_SENSOR, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
+        {ID_RULER, DataPtrVolumePair{1, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
         {ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
         {ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
         {ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},

@@ -1,6 +1,7 @@
 .metadata/
 RemoteSystemsTempFiles/
 PBLV5/Debug/
+PBLV5/.vscode/
 
 # Prerequisites
 *.d

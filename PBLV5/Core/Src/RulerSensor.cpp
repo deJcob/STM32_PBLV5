@@ -1,7 +1,8 @@
 #include "RulerSensor.h"
 #define POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST 0x0029
 
-RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
+RulerSensor::RulerSensor(uint8_t buffersSize)
+{
 
 #ifdef POLOLU
 	SENSORS_COUNT = 4;
@@ -43,8 +44,8 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 
 void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 {
-	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
-	{
+//	if (writeExpanderToReadSensor(hi2c, i) && getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
+//	{
 
 		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
 		{
@@ -96,7 +97,7 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 				}
 			}
 		}
-	}
+//	}
 
 
 }
