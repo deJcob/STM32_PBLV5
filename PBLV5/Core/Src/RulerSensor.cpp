@@ -11,7 +11,6 @@ RulerSensor::RulerSensor(uint8_t buffersSize):pololuBuffer(buffersSize){
 //		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 //		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST + i);
 		errorCounter[i] = 0;
-		sensorConfigured[i] = false;
 		writeAddresses[i] = convertSevenBitAddressToWriteAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 		readAddresses[i] = convertSevenBitAddressToReadAddress(POLOLU_SENSOR_ADDRESS_SEVEN_BIT_FIRST);
 	}
@@ -34,13 +33,9 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 	//initialize internal addresses values
 	for (uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
-		if (!sensorConfigured[i] && writeExpanderToReadSensor(hi2c, i))
+		if (writeExpanderToReadSensor(hi2c, i))
 		{
-			if (getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
-			{
-				configurePololu(hi2c, i);
-				sensorConfigured[i] = true;
-			}
+			configurePololu(hi2c, i);
 		}
 	}
 
@@ -48,76 +43,60 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 
 void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 {
-//	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
-//	{
-	if (!sensorConfigured[i])
+	if(getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
 	{
-		if (writeExpanderToReadSensor(hi2c, i)) // If wasnt configured yet we are trying to do it
+
+		if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
 		{
-			if (getDeviceStatus(hi2c, POLOLU_READ_ADDRESS) == DEVICE_READY)
+			errorCode[i] = readData[0] & 0xF0;
+			if (errorCode[i] == 0b00010000 || // VCSEL Coninuity TEST
+				errorCode[i] == 0b00100000 || // VCSEL Watchdog TEST
+				errorCode[i] == 0b00110000 || // VCSEL Watchdog
+				errorCode[i] == 0b01000000 || // PLL1 Lock
+				errorCode[i] == 0b01010000)   // PLL2 Lock
 			{
-				configurePololu(hi2c, i);
-				sensorConfigured[i] = true;
+				errorCounter[i]++;
+				if (errorCounter[i] > 5)
+				{
+					writeData[i] = 0x00;
+					writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]); // System fresh out reset
+					writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]); // Reseting GPIO0
+					writeData[i] = 0x60;
+					writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
+					errorCounter[i] = 0;
+				}
+				rawData[i] = 225;
+
+				return;
 			}
 		}
-		else
-		{
-			rawData[i] = 235;
-			return;
-		}
-	}
 
-	if(readBytePololu(hi2c, POLOLU_RESULT_RANGE_STATUS_ADDRESS, readData, readAddresses[i]))
-	{
-		errorCode[i] = readData[0] & 0xF0;
-		if (errorCode[i] == 0b00010000 || // VCSEL Coninuity TEST
-			errorCode[i] == 0b00100000 || // VCSEL Watchdog TEST
-			errorCode[i] == 0b00110000 || // VCSEL Watchdog
-			errorCode[i] == 0b01000000 || // PLL1 Lock
-			errorCode[i] == 0b01010000)   // PLL2 Lock
+		if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, readAddresses[i]))
 		{
-			errorCounter[i]++;
-			if (errorCounter[i] > 5)
+			temporaryByte = readData[0];
+			temporaryByte &= 0b00000111;
+			if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE) // It means -> New Sample Ready threshold event
 			{
-				writeData[i] = 0x00;
-				writeBytePololu(hi2c, 0x016, writeData, writeAddresses[i]); // System fresh out reset
-				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]); // Reseting GPIO0
-				writeData[i] = 0x60;
-				writeBytePololu(hi2c, 0x010, writeData, writeAddresses[i]);
-				errorCounter[i] = 0;
-			}
-			rawData[i] = 225;
+				// czytanie wartosci dopiero jak jest 4 na powyzszym
+				if (readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i]))
+				{
+	//					if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i])){
+					//jak dostane to czyszcenie
+					rawData[i] = readData[0];
+					writeData[0] = 0x07;
+					/*
+					 * int_clear_sig: Interrupt clear bits. Writing a 1 to each bit will clear the intended interrupt.
+					 * Bit [0] - Clear Range Int
+					 * Bit [1] - Clear ALS Int
+					 * Bit [2] - Clear Error Int.
+					 */
+					//clear interrupt status
+					writeBytePololu(hi2c, SYSTEM__INTERRUPT_CLEAR, writeData, writeAddresses[i]);
 
-			return;
-		}
-	}
-
-	if(readBytePololu(hi2c, RESULT__INTERRUPT_STATUS_GPIO, readData, readAddresses[i]))
-	{
-		temporaryByte = readData[0];
-		temporaryByte &= 0b00000111;
-		if (temporaryByte == POLOLU_NEW_SAMPLE_READY_VALUE) // It means -> New Sample Ready threshold event
-		{
-			// czytanie wartosci dopiero jak jest 4 na powyzszym
-			if (readBytePololu(hi2c, RESULT__RANGE_VAL, readData, readAddresses[i]))
-			{
-//					if(readBytePololu(hi2c, POLOLU_I2C_SLAVE__DEVICE_ADDRESS, readData, readAddresses[i])){
-				//jak dostane to czyszcenie
-				rawData[i] = readData[0];
-				writeData[0] = 0x07;
-				/*
-				 * int_clear_sig: Interrupt clear bits. Writing a 1 to each bit will clear the intended interrupt.
-				 * Bit [0] - Clear Range Int
-				 * Bit [1] - Clear ALS Int
-				 * Bit [2] - Clear Error Int.
-				 */
-				//clear interrupt status
-				writeBytePololu(hi2c, SYSTEM__INTERRUPT_CLEAR, writeData, writeAddresses[i]);
-
+				}
 			}
 		}
 	}
-	//	}
 
 
 }
@@ -320,15 +299,15 @@ bool RulerSensor::writeExpanderToReadSensor(I2C_HandleTypeDef *hi2c, uint8_t sen
 
 bool RulerSensor::readBytePololu(I2C_HandleTypeDef *hi2c, uint16_t registerAddress, uint8_t *value, uint16_t sensorReadAddress)
  {
-		if(HAL_I2C_Mem_Read(hi2c, sensorReadAddress, registerAddress, POLOLU_REGISTER_ADDRESS_SIZE, value, 1, 1) == HAL_OK)
-		{
-			readCounter++;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+	if(HAL_I2C_Mem_Read(hi2c, sensorReadAddress, registerAddress, POLOLU_REGISTER_ADDRESS_SIZE, value, 1, 1) == HAL_OK)
+	{
+		readCounter++;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
  }
 
 uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
