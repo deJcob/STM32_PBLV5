@@ -6,8 +6,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 4 5
 Title "Motors ADC board"
-Date "2021-05-09"
-Rev "2"
+Date "2021-05-22"
+Rev "3.0"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -183,16 +183,14 @@ NoConn ~ 4600 4250
 $Comp
 L power:GND #PWR0120
 U 1 1 609C0C43
-P 4000 3650
-F 0 "#PWR0120" H 4000 3400 50  0001 C CNN
-F 1 "GND" H 4005 3477 50  0000 C CNN
-F 2 "" H 4000 3650 50  0001 C CNN
-F 3 "" H 4000 3650 50  0001 C CNN
-	1    4000 3650
-	-1   0    0    1   
+P 3900 3500
+F 0 "#PWR0120" H 3900 3250 50  0001 C CNN
+F 1 "GND" H 3905 3327 50  0000 C CNN
+F 2 "" H 3900 3500 50  0001 C CNN
+F 3 "" H 3900 3500 50  0001 C CNN
+	1    3900 3500
+	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4000 3650 4000 3850
 NoConn ~ 3900 3850
 Text Notes 2550 5100 0    50   ~ 0
 OpAmp should be configured to block LEM's voltage to 3V3\nGain should be max 0.66, output not inverted\nSolder JP5 and JP7 for DC coupling \nVref resistors should be changed to result value of 1.65V \nCheck on https://www.sparkfun.com/products/14874
@@ -236,4 +234,8 @@ Wire Wire Line
 	4600 4150 4900 4150
 Wire Wire Line
 	4900 3400 4900 4150
+Wire Wire Line
+	3900 3500 4000 3500
+Wire Wire Line
+	4000 3500 4000 3850
 $EndSCHEMATC

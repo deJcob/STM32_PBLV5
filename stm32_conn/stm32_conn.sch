@@ -6,8 +6,8 @@ $Descr A3 16535 11693
 encoding utf-8
 Sheet 1 5
 Title "STM32F7 based AGV-ROS module"
-Date "2021-02-03"
-Rev "7.3"
+Date "2021-05-22"
+Rev "7.31"
 Comp "Silesian University Of Technology"
 Comment1 "PBL5"
 Comment2 ""
@@ -231,13 +231,13 @@ Wire Wire Line
 $Comp
 L power:GND #PWR015
 U 1 1 5F957DD6
-P 13400 5200
-F 0 "#PWR015" H 13400 4950 50  0001 C CNN
-F 1 "GND" H 13405 5027 50  0000 C CNN
-F 2 "" H 13400 5200 50  0001 C CNN
-F 3 "" H 13400 5200 50  0001 C CNN
-	1    13400 5200
-	-1   0    0    1   
+P 13250 5050
+F 0 "#PWR015" H 13250 4800 50  0001 C CNN
+F 1 "GND" H 13255 4877 50  0000 C CNN
+F 2 "" H 13250 5050 50  0001 C CNN
+F 3 "" H 13250 5050 50  0001 C CNN
+	1    13250 5050
+	1    0    0    -1  
 $EndComp
 NoConn ~ 6900 9500
 NoConn ~ 6900 9600
@@ -1416,8 +1416,6 @@ Wire Wire Line
 Wire Wire Line
 	12550 4850 13600 4850
 Wire Wire Line
-	13400 5200 13400 5300
-Wire Wire Line
 	13400 5300 13600 5300
 $Comp
 L power:GND #PWR0105
@@ -1693,26 +1691,26 @@ $EndComp
 $Comp
 L power:GND #PWR0113
 U 1 1 603CD26B
-P 10050 1450
-F 0 "#PWR0113" H 10050 1200 50  0001 C CNN
-F 1 "GND" V 10055 1277 50  0000 C CNN
-F 2 "" H 10050 1450 50  0001 C CNN
-F 3 "" H 10050 1450 50  0001 C CNN
-	1    10050 1450
-	0    1    1    0   
+P 9900 1450
+F 0 "#PWR0113" H 9900 1200 50  0001 C CNN
+F 1 "GND" H 9905 1277 50  0000 C CNN
+F 2 "" H 9900 1450 50  0001 C CNN
+F 3 "" H 9900 1450 50  0001 C CNN
+	1    9900 1450
+	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	10150 1050 10150 1350
 Wire Wire Line
 	10150 1350 10350 1350
-Text GLabel 10150 1550 0    50   Input ~ 0
+Text GLabel 10200 1550 0    50   Input ~ 0
 PF0
-Text GLabel 10150 1650 0    50   Input ~ 0
+Text GLabel 10200 1650 0    50   Input ~ 0
 PF1
 Wire Wire Line
-	10150 1550 10350 1550
+	10200 1550 10350 1550
 Wire Wire Line
-	10350 1650 10150 1650
+	10350 1650 10200 1650
 Text Notes 11900 9800 0    100  ~ 20
 WARNING: Schematics do not include\nthe proto board under the nucleo-144\nand connectors placed on it\n
 NoConn ~ 1950 3950
@@ -1726,13 +1724,17 @@ CURRENT_SENSOR_RIGHT
 NoConn ~ 4550 2750
 NoConn ~ 4550 4250
 Wire Wire Line
-	10050 1450 10350 1450
+	9900 1450 10350 1450
+Wire Wire Line
+	13250 5050 13400 5050
+Wire Wire Line
+	13400 5050 13400 5300
 Wire Bus Line
-	12950 7550 13900 7550
-Wire Bus Line
-	12950 6250 13900 6250
+	13650 4150 14550 4150
 Wire Bus Line
 	13850 4050 14550 4050
 Wire Bus Line
-	13650 4150 14550 4150
+	12950 6250 13900 6250
+Wire Bus Line
+	12950 7550 13900 7550
 $EndSCHEMATC
