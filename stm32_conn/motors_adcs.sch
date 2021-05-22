@@ -1,4 +1,5 @@
 EESchema Schematic File Version 4
+LIBS:stm32_conn-cache
 EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
@@ -51,31 +52,6 @@ Wire Wire Line
 Wire Wire Line
 	5450 2900 5450 2800
 Wire Wire Line
-	5850 3100 5950 3100
-Wire Wire Line
-	5950 3100 5950 3200
-Wire Wire Line
-	5850 3300 5950 3300
-Connection ~ 5950 3100
-Wire Wire Line
-	5950 3100 6200 3100
-Wire Wire Line
-	5850 3200 5950 3200
-Connection ~ 5950 3200
-Wire Wire Line
-	5950 3200 5950 3300
-Wire Wire Line
-	5850 3500 5950 3500
-Wire Wire Line
-	5950 3500 5950 3600
-Wire Wire Line
-	5850 3700 5950 3700
-Wire Wire Line
-	5950 3600 5850 3600
-Connection ~ 5950 3600
-Wire Wire Line
-	5950 3600 5950 3700
-Wire Wire Line
 	5050 3400 4900 3400
 $Comp
 L MCU_ModuleV2:LTS6-NP U?
@@ -115,31 +91,6 @@ $EndComp
 Wire Wire Line
 	5450 5600 5450 5700
 Wire Wire Line
-	5850 4800 5950 4800
-Wire Wire Line
-	5950 4800 5950 4900
-Wire Wire Line
-	5850 5000 5950 5000
-Connection ~ 5950 4800
-Wire Wire Line
-	5950 4800 6200 4800
-Wire Wire Line
-	5850 4900 5950 4900
-Connection ~ 5950 4900
-Wire Wire Line
-	5950 4900 5950 5000
-Wire Wire Line
-	5850 5200 5950 5200
-Wire Wire Line
-	5950 5200 5950 5300
-Wire Wire Line
-	5850 5400 5950 5400
-Wire Wire Line
-	5950 5300 5850 5300
-Connection ~ 5950 5300
-Wire Wire Line
-	5950 5300 5950 5400
-Wire Wire Line
 	5050 5100 4900 5100
 Wire Wire Line
 	5450 4500 5450 4600
@@ -151,9 +102,9 @@ Text HLabel 6200 4800 2    50   Input ~ 0
 B_IN
 Text HLabel 6200 5400 2    50   Input ~ 0
 B_OUT
-Text HLabel 2550 2850 0    50   Input ~ 0
+Text HLabel 2750 3050 0    50   Input ~ 0
 +5V
-Text HLabel 2550 2950 0    50   Input ~ 0
+Text HLabel 2750 3150 0    50   Input ~ 0
 GND
 Text HLabel 3300 4150 0    50   Input ~ 0
 ADC_A
@@ -162,39 +113,33 @@ ADC_B
 $Comp
 L power:GND #PWR0110
 U 1 1 6020CB66
-P 2650 3050
-F 0 "#PWR0110" H 2650 2800 50  0001 C CNN
-F 1 "GND" H 2655 2877 50  0000 C CNN
-F 2 "" H 2650 3050 50  0001 C CNN
-F 3 "" H 2650 3050 50  0001 C CNN
-	1    2650 3050
+P 2850 3250
+F 0 "#PWR0110" H 2850 3000 50  0001 C CNN
+F 1 "GND" H 2855 3077 50  0000 C CNN
+F 2 "" H 2850 3250 50  0001 C CNN
+F 3 "" H 2850 3250 50  0001 C CNN
+	1    2850 3250
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+5VD #PWR0111
 U 1 1 6020CB79
-P 2650 2750
-F 0 "#PWR0111" H 2650 2600 50  0001 C CNN
-F 1 "+5VD" H 2665 2923 50  0000 C CNN
-F 2 "" H 2650 2750 50  0001 C CNN
-F 3 "" H 2650 2750 50  0001 C CNN
-	1    2650 2750
+P 2850 2950
+F 0 "#PWR0111" H 2850 2800 50  0001 C CNN
+F 1 "+5VD" H 2865 3123 50  0000 C CNN
+F 2 "" H 2850 2950 50  0001 C CNN
+F 3 "" H 2850 2950 50  0001 C CNN
+	1    2850 2950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2650 2850 2650 2750
+	2850 3050 2850 2950
 Wire Wire Line
-	2550 2850 2650 2850
+	2750 3050 2850 3050
 Wire Wire Line
-	2550 2950 2650 2950
+	2750 3150 2850 3150
 Wire Wire Line
-	2650 2950 2650 3050
-Wire Wire Line
-	5950 3700 6200 3700
-Connection ~ 5950 3700
-Wire Wire Line
-	5950 5400 6200 5400
-Connection ~ 5950 5400
+	2850 3150 2850 3250
 Wire Notes Line
 	5850 5600 6050 5600
 Wire Notes Line
@@ -233,16 +178,8 @@ F 3 "" H 4100 3550 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4100 3550 4100 3850
-Wire Wire Line
-	4900 3400 4900 4050
-Wire Wire Line
-	4900 4050 4600 4050
-Wire Wire Line
-	4600 4250 4900 4250
-Wire Wire Line
-	4900 4250 4900 5100
-NoConn ~ 4600 4150
-NoConn ~ 4600 4350
+NoConn ~ 4600 4050
+NoConn ~ 4600 4250
 $Comp
 L power:GND #PWR0120
 U 1 1 609C0C43
@@ -257,6 +194,46 @@ $EndComp
 Wire Wire Line
 	4000 3650 4000 3850
 NoConn ~ 3900 3850
-Text Notes 2550 4950 0    50   Italic 0
-OpAmp should be configured to block LEM's voltage to 3V3\nGain should be max 0.66, output not inverted\nCheck on https://www.sparkfun.com/products/14874
+Text Notes 2550 5100 0    50   ~ 0
+OpAmp should be configured to block LEM's voltage to 3V3\nGain should be max 0.66, output not inverted\nSolder JP5 and JP7 for DC coupling \nVref resistors should be changed to result value of 1.65V \nCheck on https://www.sparkfun.com/products/14874
+Wire Wire Line
+	5850 4800 6200 4800
+Wire Wire Line
+	5850 5400 6200 5400
+Wire Wire Line
+	5850 4900 5950 4900
+Wire Wire Line
+	5950 4900 5950 5200
+Wire Wire Line
+	5950 5200 5850 5200
+Wire Wire Line
+	5850 5000 6000 5000
+Wire Wire Line
+	6000 5000 6000 5300
+Wire Wire Line
+	6000 5300 5850 5300
+Wire Wire Line
+	5850 3700 6200 3700
+Wire Wire Line
+	5850 3100 6200 3100
+Wire Wire Line
+	5850 3200 5950 3200
+Wire Wire Line
+	5950 3200 5950 3500
+Wire Wire Line
+	5950 3500 5850 3500
+Wire Wire Line
+	5850 3300 6000 3300
+Wire Wire Line
+	6000 3300 6000 3600
+Wire Wire Line
+	6000 3600 5850 3600
+Wire Wire Line
+	4600 4350 4900 4350
+Wire Wire Line
+	4900 4350 4900 5100
+Wire Wire Line
+	4600 4150 4900 4150
+Wire Wire Line
+	4900 3400 4900 4150
 $EndSCHEMATC
