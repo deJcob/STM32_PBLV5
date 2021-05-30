@@ -106,7 +106,8 @@ PCD_HandleTypeDef hpcd_USB_OTG_FS;
 EncoderSystem encoderSystem(&htim8, &htim3, ENCODER2_Z_Pin, ENCODER1_Z_Pin);
 DrivingSystem drivingSystem(&htim1, TIM_CHANNEL_4, &htim1, TIM_CHANNEL_3);
 IMUSensor imuSensors(IMU_NUM_OF_ELEM);
-RulerSensor rulerSensors(RULER_SENSORS_COUNT);
+RulerSensor rulerSensors(RULER_SENSORS_COUNT, INITIAL_EXPANDER_INDEX_FRONT_RULER);
+RulerSensor sideRulerSensors(RULER_SENSORS_COUNT, INITIAL_EXPANDER_INDEX_SIDE_RULER);
 DataManagement dataManagement;
 TimerConfigurator timerConfig(&htim6, &htim9, &htim7);
 GPSManager gpsManager(&hdma_usart2_rx);
@@ -133,6 +134,7 @@ std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
         {ID_GYRO, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_GYRO, std::bind(&IMUSensor::getGyroData, &imuSensors, std::placeholders::_1)}},
         {ID_MAG, DataPtrVolumePair{IMU_NUM_OF_ELEM, SIZE_GET_MAG, std::bind(&IMUSensor::getMagData, &imuSensors, std::placeholders::_1)}},
         {ID_RULER, DataPtrVolumePair{1, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &rulerSensors, std::placeholders::_1)}},
+        {ID_SIDE_RULER, DataPtrVolumePair{1, RULER_SENSORS_COUNT, std::bind(&RulerSensor::getPololuData, &sideRulerSensors, std::placeholders::_1)}},
         {ID_ENCODER, DataPtrVolumePair{1, SIZE_GET_ENCODER, std::bind(&EncoderSystem::getDataInArray, &encoderSystem, std::placeholders::_1)}},
         {ID_GPS, DataPtrVolumePair{1, SIZE_GET_GPS, std::bind(&GPSManager::getDataInArray, &gpsManager, std::placeholders::_1)}},
         {ID_MINI_LIDAR, DataPtrVolumePair{1, SIZE_GET_MINI_LIDAR, std::bind(&MiniLidarManager::getDataInArray, &miniLidarManager, std::placeholders::_1)}},
@@ -436,6 +438,7 @@ int main(void)
   HAL_I2C_Init(&hi2c2);
   imuSensors.initializeI2C_Sensors(&hi2c1);
   rulerSensors.initializeI2C_Sensors(&hi2c2);
+  sideRulerSensors.initializeI2C_Sensors(&hi2c2);
 
   drivingSystem.initialize();
 

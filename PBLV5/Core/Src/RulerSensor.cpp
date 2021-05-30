@@ -32,7 +32,7 @@ void RulerSensor::initializeI2C_Sensors(I2C_HandleTypeDef *hi2c)
 {
 	i2cHandle = hi2c;
 	//initialize internal addresses values
-	for (uint8_t i = 0; i < SENSORS_COUNT; i++)
+	for (uint8_t initialExpanderIndex; i < initialExpanderIndex + SENSORS_COUNT; i++)
 	{
 		if (writeExpanderToReadSensor(hi2c, i))
 		{
@@ -107,7 +107,7 @@ void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
 	if(!readingInProgress)
 	{
 	#ifdef POLOLU
-		for(uint8_t i = 0; i < SENSORS_COUNT; i++){
+		for(uint8_t i = initialExpanderIndex; i < initialExpanderIndex + SENSORS_COUNT; i++){
 			if(writeExpanderToReadSensor(hi2c, i))
 			{
 				pullPololuData(hi2c, i);

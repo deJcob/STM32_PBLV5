@@ -15,6 +15,7 @@ class RulerSensor {
 	I2C_HandleTypeDef *i2cHandle;
 
 	uint8_t SENSORS_COUNT;
+	uint8_t initialExpanderIndex;
  	uint8_t rulerSensorsData[8];
  	uint16_t writeAddresses[8];
  	uint16_t readAddresses[8];
