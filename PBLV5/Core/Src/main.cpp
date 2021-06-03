@@ -42,6 +42,7 @@
 #include "Electromagnet.h"
 #include "TimeMeasurementSystem.h"
 #include "UltrasoundManager.h"
+#include "CurrentMeasurement.h"
 #include "globalDefines.h"
 
 extern "C" void UART_GPS_RX_PROCESSING(void);
@@ -117,13 +118,14 @@ RFIDManager rfidManager(&hdma_uart4_rx);
 Electromagnet electromagnet;
 TimeMeasurementSystem timMeasureSystem(&htim14);
 UltrasoundManager ultrasoundManager(&hdma_uart5_rx, &huart5);
+CurrentMeasurement currentMeasurement;
+
 int16_t diffZOne = 0;
 int16_t diffZTwo = 0;
 
 int16_t diffZOneTimerValue = 0;
 int16_t diffZTwoTimerValue = 0;
 
-volatile uint16_t adcMeasurement[2] = {0};
 
 std::map<uint8_t, DataPtrVolumePair> dataPtrMap =
     {
@@ -422,8 +424,7 @@ int main(void)
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adcMeasurement, 2);
-  //  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)currentMeasurement.dataBuffer, ADC_BUF_LEN);
 
   canLidar.configureCAN();
 
