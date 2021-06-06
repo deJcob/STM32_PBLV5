@@ -200,6 +200,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     timMeasureSystem.takeTS(0);
     imuSensors.pullDataFromSensorsI2C(&hi2c1);
     rulerSensors.pullDataFromSensorsI2C(&hi2c2);
+    sideRulerSensors.pullDataFromSensorsI2C(&hi2c2);
     timMeasureSystem.calculateElapsedTime(0);
   }
   if (htim->Instance == TIM9)
