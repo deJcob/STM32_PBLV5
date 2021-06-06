@@ -15,6 +15,7 @@ CurrentMeasurement::CurrentMeasurement(ADC_HandleTypeDef *hadc, DMA_HandleTypeDe
 void CurrentMeasurement::Init()
 {
 	lastNDTR = dmaHandler->Instance->NDTR;
+	if (lastNDTR % 2 != 1) lastNDTR--;
 }
 
 
@@ -23,7 +24,7 @@ uint16_t CurrentMeasurement::getCurrentData(uint8_t *dataBuffer)
 	uint32_t currentNDTR = dmaHandler->Instance->NDTR;
 	uint32_t len = 0;
 
-	if (currentNDTR % 2 != 0) currentNDTR++; // I want to have got data pairs and also do not go outside the memory
+	if (currentNDTR % 2 != 1) currentNDTR++; // I want to have got data pairs and also do not go outside the memory
 	// NDTR register is decrementing after every conversion (!)
 	if (currentNDTR <= lastNDTR)
 	{
