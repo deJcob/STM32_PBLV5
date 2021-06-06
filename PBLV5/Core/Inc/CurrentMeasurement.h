@@ -13,9 +13,9 @@
 #include "DataBuffer.h"
 
 #define ADC_CHANNELS 2
-#define MEASUREMENT_BYTES 2
-#define ADC_MEASUREMENTS_FOR_ONE_CHANNEL 138
-#define ADC_BUF_LEN (uint16_t)4*ADC_MEASUREMENTS_FOR_ONE_CHANNEL*ADC_CHANNELS
+#define MEAS_BYTES 2
+#define MAX_ADC_MEASUREMENTS_FOR_ONE_CHANNEL 138
+#define ADC_BUF_LEN (uint16_t)4*MAX_ADC_MEASUREMENTS_FOR_ONE_CHANNEL*ADC_CHANNELS
 #define ADC_BUF_LEN_IN_BYTES (uint16_t)(ADC_BUF_LEN>>2)
 
 
@@ -32,9 +32,13 @@ public:
 	void Init();
 	uint16_t getCurrentData(uint8_t *dataBuffer);
 
-	uint32_t lastNDTR = 0;
 	uint16_t dataBuff[ADC_BUF_LEN] = {0};
 
+private:
+    void makeADCEven(uint32_t &n);
+	uint32_t lastRead = 0;		// Pointers for circular buffer used by DMA (NDTR register)
+	uint32_t currentRead = 0;
+	uint16_t tmpLen = 0;
 };
 
 #endif /* INC_CURRENTMEASUREMENT_H_ */

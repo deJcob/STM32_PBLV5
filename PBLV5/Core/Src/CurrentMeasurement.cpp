@@ -14,36 +14,49 @@ CurrentMeasurement::CurrentMeasurement(ADC_HandleTypeDef *hadc, DMA_HandleTypeDe
 
 void CurrentMeasurement::Init()
 {
-	lastNDTR = dmaHandler->Instance->NDTR;
-	if (lastNDTR % 2 != 1) lastNDTR--;
+	lastRead = dmaHandler->Instance->NDTR;
+	makeADCEven(lastRead);
 }
-
 
 uint16_t CurrentMeasurement::getCurrentData(uint8_t *dataBuffer)
 {
-	uint32_t currentNDTR = dmaHandler->Instance->NDTR;
-	uint32_t len = 0;
+	currentRead = dmaHandler->Instance->NDTR;
 
-	if (currentNDTR % 2 != 1) currentNDTR++; // I want to have got data pairs and also do not go outside the memory
-	// NDTR register is decrementing after every conversion (!)
-	if (currentNDTR <= lastNDTR)
+	makeADCEven(currentRead);
+
+	// Circular descending DMA buffer handling
+	if (currentRead <= lastRead)
 	{
-		len = lastNDTR - currentNDTR;
-		std::copy(dataBuff+(currentNDTR*MEASUREMENT_BYTES), dataBuff+(lastNDTR*MEASUREMENT_BYTES), dataBuffer);
+		tmpLen = lastRead - currentRead;
+		std::copy(dataBuff + (currentRead*MEAS_BYTES), dataBuff+(lastRead*MEAS_BYTES), dataBuffer);
 	}
 	else
 	{
-		len = lastNDTR;
-		std::copy(dataBuff, dataBuff+(lastNDTR*MEASUREMENT_BYTES), dataBuffer);
-		len += ADC_BUF_LEN - currentNDTR;
-		std::copy(dataBuff+(currentNDTR*MEASUREMENT_BYTES), dataBuff+ADC_BUF_LEN_IN_BYTES, dataBuffer+(lastNDTR*MEASUREMENT_BYTES));
+		tmpLen = lastRead;
+		std::copy(dataBuff, dataBuff+(lastRead*MEAS_BYTES), dataBuffer);
+		tmpLen += ADC_BUF_LEN - currentRead;
+		std::copy(dataBuff + (currentRead*MEAS_BYTES),
+				dataBuff + ADC_BUF_LEN_IN_BYTES,
+				dataBuffer + (lastRead*MEAS_BYTES));
 	}
-	lastNDTR = currentNDTR;
 
-	return len*MEASUREMENT_BYTES;
+	lastRead = currentRead;
+
+	return tmpLen*MEASUREMENT_BYTES;
+}
+
+inline void CurrentMeasurement::makeADCEven(uint32_t &n)
+{
+	// I want to have got data pairs and also do not go outside the memory
+	if (n % 2 != 1)
+	{
+		if (n < ADC_BUF_LEN) n++;
+		else n--;
+	}
 }
 
 CurrentMeasurement::~CurrentMeasurement() {
 	// TODO Auto-generated destructor stub
 }
+
 
