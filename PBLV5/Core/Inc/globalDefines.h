@@ -17,7 +17,7 @@
 #define ID_GPS 0x08
 #define ID_MINI_LIDAR 0x09
 #define ID_RULER 0x12
-#define ID_CURRENT 0x13
+#define ID_CURRENT 0x14
 #define ID_TIME_SYNC 0xFF
 #define ID_CAN_DIST 0x0B
 #define ID_CAN_SPEED 0x0C
@@ -54,7 +54,7 @@
 #define SIZE_GET_CURRENT 4
 
 #define IMU_NUM_OF_ELEM 250
-#define CURRENT_NUM_OF_ELEM 150
+#define CURRENT_NUM_OF_ELEM 138
 
 #define RULER_SENSORS_COUNT 4
 #define SIZE_GET_RULER_SENSOR 1
