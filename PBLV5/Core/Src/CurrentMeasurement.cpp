@@ -42,7 +42,7 @@ uint16_t CurrentMeasurement::getCurrentData(uint8_t *dataBuffer)
 
 	lastRead = currentRead;
 
-	return tmpLen*MEASUREMENT_BYTES;
+	return tmpLen*MEAS_BYTES;
 }
 
 inline void CurrentMeasurement::makeADCEven(uint32_t &n)
