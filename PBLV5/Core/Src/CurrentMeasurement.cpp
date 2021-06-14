@@ -28,15 +28,15 @@ uint16_t CurrentMeasurement::getCurrentData(uint8_t *dataBuffer)
 	if (currentRead <= lastRead)
 	{
 		tmpLen = lastRead - currentRead;
-		std::copy(dataBuff + (currentRead*MEAS_BYTES), dataBuff+(lastRead*MEAS_BYTES), dataBuffer);
+		std::copy((uint8_t*)(dataBuff + (currentRead*MEAS_BYTES)), (uint8_t*)(dataBuff+(lastRead*MEAS_BYTES)), dataBuffer);
 	}
 	else
 	{
 		tmpLen = lastRead;
-		std::copy(dataBuff, dataBuff+(lastRead*MEAS_BYTES), dataBuffer);
+		std::copy((uint8_t*)(dataBuff), (uint8_t*)(dataBuff+(lastRead*MEAS_BYTES)), dataBuffer);
 		tmpLen += ADC_BUF_LEN - currentRead;
-		std::copy(dataBuff + (currentRead*MEAS_BYTES),
-				dataBuff + ADC_BUF_LEN_IN_BYTES,
+		std::copy((uint8_t*)(dataBuff + (currentRead*MEAS_BYTES)),
+				(uint8_t*)(dataBuff + ADC_BUF_LEN_IN_BYTES),
 				dataBuffer + (lastRead*MEAS_BYTES));
 	}
 
