@@ -426,7 +426,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)currentMeasurement.dataBuff, ADC_BUF_LEN);
-  currentMeasurement.Init();
 
   canLidar.configureCAN();
 
@@ -440,6 +439,7 @@ int main(void)
   imuSensors.initializeI2C_Sensors(&hi2c1);
   rulerSensors.initializeI2C_Sensors(&hi2c2);
 
+  currentMeasurement.Init();
   drivingSystem.initialize();
 
   dataManagement.configure(&dataPtrMap);

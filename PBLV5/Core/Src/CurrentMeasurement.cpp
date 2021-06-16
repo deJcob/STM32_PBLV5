@@ -14,37 +14,43 @@ CurrentMeasurement::CurrentMeasurement(ADC_HandleTypeDef *hadc, DMA_HandleTypeDe
 
 void CurrentMeasurement::Init()
 {
-	lastRead = dmaHandler->Instance->NDTR;
+	lastRead = ADC_BUF_LEN - dmaHandler->Instance->NDTR;
 	makeADCEven(lastRead);
 }
 
 uint16_t CurrentMeasurement::getCurrentData(uint8_t *dataBuffer)
 {
-	currentRead = dmaHandler->Instance->NDTR;
+	currentRead = ADC_BUF_LEN - dmaHandler->Instance->NDTR;
 
 	makeADCEven(currentRead);
-	lastRead = lastRead - 2;
-
 	// Circular descending DMA buffer handling
-	if (currentRead <= lastRead)
+	// NDTR register is decremented but memory is incremeneted.
+	if (currentRead > lastRead)
 	{
-		tmpLen = lastRead - currentRead;
-
-		std::copy_n((uint8_t*)(dataBuff + currentRead),
-				  (lastRead*MEAS_BYTES),
+		tmpLen = currentRead - lastRead;
+		std::copy_n((uint8_t*)(dataBuff + lastRead),
+				  (tmpLen*MEAS_BYTES),
 				  dataBuffer);
+
+	}
+	else if (currentRead < lastRead)
+	{
+
+		tmpLen = ADC_BUF_LEN - lastRead;
+		dataBuffer = std::copy_n((uint8_t*)(dataBuff + lastRead),
+				  tmpLen*MEAS_BYTES,
+				  dataBuffer);
+
+
+		std::copy_n((uint8_t*)(dataBuff),
+				  currentRead*MEAS_BYTES,
+				  dataBuffer);
+
+		tmpLen += currentRead;
 	}
 	else
 	{
-		tmpLen = lastRead;
-		dataBuffer = std::copy_n((uint8_t*)(dataBuff),
-				  lastRead*MEAS_BYTES,
-				  dataBuffer);
-
-		tmpLen += ADC_BUF_LEN - currentRead;
-		std::copy_n((uint8_t*)(dataBuff + currentRead),
-				  (ADC_BUF_LEN - currentRead)*MEAS_BYTES,
-				  dataBuffer);
+		return 0;
 	}
 
 	lastRead = currentRead;
@@ -59,7 +65,11 @@ inline void CurrentMeasurement::makeADCEven(uint32_t &n)
 	if (n % 2 != 0)
 	{
 		if (n < ADC_BUF_LEN) n++;
-		else n--;
+		else
+		{
+			if (n <= 0) n = ADC_BUF_LEN;
+			else n--;
+		}
 	}
 }
 
