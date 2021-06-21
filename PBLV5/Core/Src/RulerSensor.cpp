@@ -5,7 +5,7 @@ RulerSensor::RulerSensor(uint8_t buffersSize)
 {
 
 #ifdef POLOLU
-	SENSORS_COUNT = 4;
+	SENSORS_COUNT = 8;
 
 	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
@@ -319,6 +319,11 @@ uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
 	dataToReturn[1] = rawData[1];
 	dataToReturn[2] = rawData[2];
 	dataToReturn[3] = rawData[3];
+
+	dataToReturn[4] = rawData[4];
+	dataToReturn[5] = rawData[5];
+	dataToReturn[6] = rawData[6];
+	dataToReturn[7] = rawData[7];
 
 	std::copy_n(dataToReturn, RULER_SENSOR_OBJECTDATAVOLUME, dataBuffer);
 
