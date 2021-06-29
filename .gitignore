@@ -38,6 +38,7 @@ PBLV5/.vscode/
 
 #local settings
 PBLV5/.settings/language.settings.xml
+PBLV5/.settings/
 *.orig 
 
 #KiCad files
