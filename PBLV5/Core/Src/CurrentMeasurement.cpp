@@ -12,7 +12,7 @@ CurrentMeasurement::CurrentMeasurement(ADC_HandleTypeDef *hadc, DMA_HandleTypeDe
 	dmaHandler = hdma;
 }
 
-void CurrentMeasurement::Init()
+void CurrentMeasurement::init()
 {
 	lastRead = ADC_BUF_LEN - dmaHandler->Instance->NDTR;
 	makeADCEven(lastRead);

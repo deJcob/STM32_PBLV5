@@ -439,7 +439,7 @@ int main(void)
   imuSensors.initializeI2C_Sensors(&hi2c1);
   rulerSensors.initializeI2C_Sensors(&hi2c2);
 
-  currentMeasurement.Init();
+  currentMeasurement.init();
   drivingSystem.initialize();
 
   dataManagement.configure(&dataPtrMap);

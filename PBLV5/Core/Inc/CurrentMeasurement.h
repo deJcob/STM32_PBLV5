@@ -31,7 +31,7 @@ public:
 	CurrentMeasurement(ADC_HandleTypeDef *hadc, DMA_HandleTypeDef *hdma);
 	virtual ~CurrentMeasurement();
 
-	void Init();
+	void init();
 	uint16_t getCurrentData(uint8_t *dataBuffer);
 
 	uint16_t dataBuff[ADC_BUF_LEN] = {0};
