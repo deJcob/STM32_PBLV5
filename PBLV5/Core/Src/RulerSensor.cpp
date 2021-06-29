@@ -5,7 +5,7 @@ RulerSensor::RulerSensor(uint8_t buffersSize)
 {
 
 #ifdef POLOLU
-	SENSORS_COUNT = 8;
+//	SENSORS_COUNT = 8;
 
 	for(uint8_t i = 0; i < SENSORS_COUNT; i++)
 	{
@@ -104,8 +104,8 @@ void RulerSensor::pullPololuData(I2C_HandleTypeDef *hi2c, uint8_t i)
 
 void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
 {
-	if(!readingInProgress)
-	{
+//	if(!readingInProgress)
+//	{
 	#ifdef POLOLU
 		for(uint8_t i = 0; i < SENSORS_COUNT; i++){
 			if(writeExpanderToReadSensor(hi2c, i))
@@ -116,7 +116,7 @@ void RulerSensor::pullDataFromSensorsI2C(I2C_HandleTypeDef *hi2c)
 	#else
 		pullSparkfunData(hi2c, ACC_SENS_ADDR, ACC_DATA | ACC_MULTIBYTE_READ,	ACC_DATA_SIZE);
 	#endif
-	}
+//	}
 }
 
 void RulerSensor::writeI2C(I2C_HandleTypeDef *hi2c, uint8_t sensorAddr , uint16_t *sensorRegAddr, uint8_t *regValue)
@@ -319,7 +319,6 @@ uint16_t RulerSensor::getPololuData(uint8_t *dataBuffer)
 	dataToReturn[1] = rawData[1];
 	dataToReturn[2] = rawData[2];
 	dataToReturn[3] = rawData[3];
-
 	dataToReturn[4] = rawData[4];
 	dataToReturn[5] = rawData[5];
 	dataToReturn[6] = rawData[6];

@@ -200,8 +200,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     timMeasureSystem.takeTS(0);
     imuSensors.pullDataFromSensorsI2C(&hi2c1);
-    rulerSensors.pullDataFromSensorsI2C(&hi2c2);
     timMeasureSystem.calculateElapsedTime(0);
+
+    rulerSensors.pullDataFromSensorsI2C(&hi2c2);
   }
   if (htim->Instance == TIM9)
   {
@@ -235,25 +236,28 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     drivingSystem.drivingService();
 
+//
+//    rulerSensors.pullDataFromSensorsI2C(&hi2c2);
+
     timMeasureSystem.calculateElapsedTime(3);
   }
 
   if (htim->Instance == TIM13)
   {
-    timMeasureSystem.takeTS(4);
-
-    canLidar.scheduleADASFrames();
-
-    timMeasureSystem.calculateElapsedTime(4);
+//    timMeasureSystem.takeTS(4);
+//
+////    canLidar.scheduleADASFrames();
+//
+//    timMeasureSystem.calculateElapsedTime(4);
   }
 
   if (htim->Instance == TIM12)
   {
-    timMeasureSystem.takeTS(5);
-
-    ultrasoundManager.fetchDistanceData();
-
-    timMeasureSystem.takeTS(5);
+//    timMeasureSystem.takeTS(5);
+//
+////    ultrasoundManager.fetchDistanceData();
+//    rulerSensors.pullDataFromSensorsI2C(&hi2c2);
+//    timMeasureSystem.takeTS(5);
   }
 
   if (htim->Instance == TIM14)

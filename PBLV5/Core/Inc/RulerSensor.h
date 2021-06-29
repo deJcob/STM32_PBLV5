@@ -14,16 +14,16 @@ class RulerSensor {
 
 	I2C_HandleTypeDef *i2cHandle;
 
-	uint8_t SENSORS_COUNT;
- 	uint8_t rulerSensorsData[8];
- 	uint16_t writeAddresses[8];
- 	uint16_t readAddresses[8];
- 	uint16_t errorCounter[8];
+	const uint8_t SENSORS_COUNT =  8;
+ 	uint8_t rulerSensorsData[8] = {0};
+ 	uint16_t writeAddresses[8] = {0};
+ 	uint16_t readAddresses[8] = {0};
+ 	uint16_t errorCounter[8] = {0};
 
-	uint8_t rawData[8];
-	uint8_t readData[8];
-	uint8_t writeData[8];
-	volatile uint8_t errorCode[8];
+	uint8_t rawData[8] = {0};
+	uint8_t readData[8] = {0};
+	uint8_t writeData[8] = {0};
+	volatile uint8_t errorCode[8] = {0};
 	uint8_t temporaryByte = 0;
 	bool readingInProgress = 0;
 	uint32_t dataTimeStamp = 0;
